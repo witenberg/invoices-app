@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
           <footer className="bg-gray-100 py-6">
             <div className="container mx-auto px-6 text-center text-gray-600">
-              © 2023 SimpleInvoices. All rights reserved.
+              © 2024 SimpleInvoices. All rights reserved.
             </div>
           </footer>
         </div>
