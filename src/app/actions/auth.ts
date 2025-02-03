@@ -1,9 +1,8 @@
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from 'bcrypt'
-import { findUserByEmail } from "./user";
-import NextAuth from "next-auth";
-
+import NextAuth, { type DefaultSession } from "next-auth"
+import GoogleProvider from "next-auth/providers/google"
+import CredentialsProvider from "next-auth/providers/credentials"
+import { compare } from "bcrypt"
+import { findUserByEmail, addUser, type GoogleUser, type CredentialsUser, type ExtendedUser } from "./user"
 
 export const {
   handlers: { GET, POST },
@@ -12,77 +11,84 @@ export const {
   signOut,
 } = NextAuth({
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
-
   providers: [
     CredentialsProvider({
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (credentials === null) return null
+        if (!credentials) return null
 
-        const { email, password } = credentials as { email: string; password: string}
+        const { email, password } = credentials as {
+          email: string
+          password: string
+        }
 
-        const user = await findUserByEmail(email);
+        const user = (await findUserByEmail(email)) as CredentialsUser
 
-        if (user) {
-          const isMatch = await compare(
-            password,
-            user.password,
-          );
+        if (user && user.login_method === "credentials") {
+          const isMatch = await compare(password, user.password)
 
           if (isMatch) {
-            return user;
-          } else {
-            return null;
+            return {
+              id: user.id,
+              email: user.email,
+              isNewUser: false,
+              login_method: user.login_method,
+            }
           }
-        } else {
-          return null;
+        }
+        return null
+      },
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      async profile(profile): Promise<ExtendedUser> {
+        const email = profile.email
+        let user = (await findUserByEmail(email)) as GoogleUser
+        let isNewUser = false
+        if (!user) {
+          user = await addUser(profile.name!, profile.email!, "google")
+          isNewUser = true
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          login_method: "google",
+          isNewUser,
         }
       },
     }),
-
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-    }),
   ],
-
   callbacks: {
-    async signIn({ user, account }) {
+    async jwt({ token, user }) {
       if (user) {
-        return true; // Jeśli użytkownik jest poprawny, pozwól na zalogowanie
-      } else {
-        throw new Error("Authentication failed");
+        // console.log("user in JWT: " + user);
+        token.id = user.id
+        token.email = user.email
+        token.isNewUser = (user as ExtendedUser).isNewUser
+        token.login_method = (user as ExtendedUser).login_method
+      }
+      // console.log("token after JWT callback: ", token);
+      return token
+    },
+    async session({ session, token }): Promise<DefaultSession & { user: ExtendedUser }> {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as string,
+          email: token.email as string,
+          isNewUser: token.isNewUser as boolean,
+          login_method: token.login_method as string,
+        },
       }
     },
-
-    // async jwt({ token, user }) {
-    //   if (user) {
-    //     token.id = user.id;
-    //     token.role = user.role;
-    //   } else {
-    //     const dbUser = await User.findOne({ email: token.email });
-    //     token.id = dbUser?._id;
-    //     token.role = dbUser?.role;
-    //   }
-    //   return token;
-    // },
-
-    // async session({ session, token, user }) {
-    //   session.user.id = token.id;
-    //   session.user.role = token.role;
-    //   return session;
-    // },
   },
-});
+})
+

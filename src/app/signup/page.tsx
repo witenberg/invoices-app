@@ -38,7 +38,7 @@ export default function Signup() {
         throw new Error(data.error || 'Something went wrong')
       }
 
-      router.push('/login')
+      router.push('/welcome')
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An unexpected error occurred')
     }
@@ -93,7 +93,8 @@ export default function Signup() {
 
             <div className="mt-6">
               <Button
-                onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                onClick={() => signIn('google', { callbackUrl: '/welcome' })}
+                // onClick={() => signIn('google')}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
                 Sign up with Google

@@ -23,7 +23,6 @@ export async function POST(req: Request) {
     if (login_method === 'credentials') {
       hashedPassword = await hash(password, 10)
     }
-    
     const client = await pool.connect()
     try {
       await client.query('BEGIN')

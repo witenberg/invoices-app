@@ -7,7 +7,6 @@ import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
-import { signIn as nextAuthSignIn } from "next-auth/react"
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null)
@@ -24,7 +23,6 @@ export default function Login() {
     const password = formData.get('password') as string
 
     try {
-      //const result = await doCredentialLogin(email, password);
       const result = await signIn("credentials", {
         email: email,
         password: password,
@@ -34,7 +32,7 @@ export default function Login() {
       if (result?.error)
         setError("Invalid credentials");
       else
-        router.push('/')
+        router.push('/invoices')
 
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An unexpected error occurred')
@@ -89,7 +87,7 @@ export default function Login() {
             <div className="mt-6 grid grid-cols-3 gap-3">
               <div>
                 <Button
-                  onClick={() => nextAuthSignIn('google')}
+                  onClick={() => signIn('google', { callbackUrl: '/welcome' })}
                   className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
                   <span className="sr-only">Sign in with Google</span>
