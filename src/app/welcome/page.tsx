@@ -63,22 +63,108 @@ const languages = ['Polski', 'English', 'Deutsch', 'Français']
 //   )
 // }
 
+// export default function Welcome() {
+//   const [currency, setCurrency] = useState('')
+//   const [language, setLanguage] = useState('')
+//   const [loading, setLoading] = useState(true)
+//   // const [color, setColor] = useState('#000000')
+//   const router = useRouter()
+//   const { data: session, status } = useSession();
+//   console.log("ID uzytkownika: " + session?.user?.id);
+//   console.log("session data: ", session);
+  
+//   if (status === 'authenticated') {
+//     const user = session.user as ExtendedUser;
+//     useEffect(() => {
+//       if (user.isNewUser !== true) router.push('/dashboard/invoices');
+//       setLoading(false);
+//     },[user])
+//   }
+
+
+//   const id = session?.user?.id;
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault()
+//     try {
+//       const response = await fetch('/api/update-preferences', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ id, currency, language }),
+//       })
+
+//       if (response.ok) {
+//         router.push('/dashboard//invoices')
+//       } else {
+//         console.error('Failed to update preferences')
+//       }
+//     } catch (error) {
+//       console.error('Error updating preferences:', error)
+//     }
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+//       <div className="bg-white p-8 rounded-lg shadow-md w-96">
+//         <h1 className="text-2xl font-bold mb-6 text-center">Welcome!</h1>
+//         <form onSubmit={handleSubmit} className="space-y-4">
+//           <div>
+//             <Label htmlFor="currency">Default currency</Label>
+//             <Select onValueChange={setCurrency} value={currency}>
+//               <SelectTrigger>
+//                 <SelectValue placeholder="Choose currency" />
+//               </SelectTrigger>
+//               <SelectContent>
+//                 {currencies.map((c) => (
+//                   <SelectItem key={c} value={c}>{c}</SelectItem>
+//                 ))}
+//               </SelectContent>
+//             </Select>
+//           </div>
+//           <div>
+//             <Label htmlFor="language">Default language</Label>
+//             <Select onValueChange={setLanguage} value={language}>
+//               <SelectTrigger>
+//                 <SelectValue placeholder="Choose language" />
+//               </SelectTrigger>
+//               <SelectContent>
+//                 {languages.map((l) => (
+//                   <SelectItem key={l} value={l}>{l}</SelectItem>
+//                 ))}
+//               </SelectContent>
+//             </Select>
+//           </div>
+//           {/* <div>
+//             <Label>Company color</Label>
+//             <ColorPicker color={color} setColor={setColor} />
+//           </div> */}
+//           <Button type="submit" className="w-full">Continue</Button>
+//         </form>
+//       </div>
+//     </div>
+//   )
+// }
+
 export default function Welcome() {
   const [currency, setCurrency] = useState('')
   const [language, setLanguage] = useState('')
-  // const [color, setColor] = useState('#000000')
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { data: session, status } = useSession();
-  console.log("ID uzytkownika: " + session?.user?.id);
   console.log("session data: ", session);
-  
-  if (status === 'authenticated') {
-    const user = session.user as ExtendedUser;
 
-    if (user.isNewUser !== true) router.push('/invoices');
-  }
-
- 
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const user = session?.user as ExtendedUser;
+      if (user.isNewUser === false) {
+        router.push('/dashboard/invoices');
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [status, session]); // Dodajemy `status`, żeby efekt odpalał się, gdy się zmienia
 
   const id = session?.user?.id;
 
@@ -94,13 +180,21 @@ export default function Welcome() {
       })
 
       if (response.ok) {
-        router.push('/invoices')
+        router.push('/dashboard/invoices')
       } else {
         console.error('Failed to update preferences')
       }
     } catch (error) {
       console.error('Error updating preferences:', error)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+      </div>
+    )
   }
 
   return (
@@ -134,14 +228,9 @@ export default function Welcome() {
               </SelectContent>
             </Select>
           </div>
-          {/* <div>
-            <Label>Company color</Label>
-            <ColorPicker color={color} setColor={setColor} />
-          </div> */}
           <Button type="submit" className="w-full">Continue</Button>
         </form>
       </div>
     </div>
   )
 }
-

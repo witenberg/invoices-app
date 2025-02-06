@@ -2,6 +2,7 @@ import pool from "@/lib/db"
 import type { User } from "next-auth"
 
 export interface ExtendedUser extends User {
+  userid: string
   isNewUser?: boolean
   login_method?: string
 }
@@ -56,7 +57,7 @@ export const addUser = async (name: string, email: string, login_method: string)
     )
     const userDB = res.rows[0]
     return {
-      id: userDB.userid,
+      userid: userDB.userid,
       email: userDB.email,
       login_method: "google",
       isNewUser: true,

@@ -2,22 +2,30 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Hero } from '@/components/Hero'
 import { blogPosts, BlogPost } from '@/config/siteConfig'
+import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 
 export default function Blog() {
   return (
-    <div className="min-h-screen bg-white">
-      <Hero
-        title="Latest Updates & Resources"
-        description="Insights and guides to help you manage your business better"
-      />
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        <div className="min-h-screen bg-white">
+          <Hero
+            title="Latest Updates & Resources"
+            description="Insights and guides to help you manage your business better"
+          />
 
-      <div className="container mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
-            <Post key={post.title} {...post} />
-          ))}
+          <div className="container mx-auto px-6 py-20">
+            <div className="grid md:grid-cols-3 gap-8">
+              {blogPosts.map((post) => (
+                <Post key={post.title} {...post} />
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   )
 }

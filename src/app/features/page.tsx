@@ -2,29 +2,37 @@ import { Button } from "@/components/ui/button"
 import { Check } from 'lucide-react'
 import { Hero } from '@/components/Hero'
 import { features, Feature } from '@/config/siteConfig'
+import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 
 export default function Features() {
   return (
-    <div className="min-h-screen bg-white">
-      <Hero
-        title="Features that streamline your billing"
-        description="Everything you need to manage invoices, subscriptions, and get paid faster"
-      >
-        <Button className="bg-white text-[#2E75B6] hover:bg-gray-100">
-          Start Free Trial
-        </Button>
-        <Button variant="outline" className="border-white text-white hover:bg-white/10">
-          View Demo
-        </Button>
-      </Hero>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        <div className="min-h-screen bg-white">
+          <Hero
+            title="Features that streamline your billing"
+            description="Everything you need to manage invoices, subscriptions, and get paid faster"
+          >
+            <Button className="bg-white text-[#2E75B6] hover:bg-gray-100">
+              Start Free Trial
+            </Button>
+            <Button variant="outline" className="border-white text-white hover:bg-white/10">
+              View Demo
+            </Button>
+          </Hero>
 
-      <div className="container mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-3 gap-12">
-          {features.map((feature) => (
-            <FeatureSection key={feature.title} {...feature} />
-          ))}
+          <div className="container mx-auto px-6 py-20">
+            <div className="grid md:grid-cols-3 gap-12">
+              {features.map((feature) => (
+                <FeatureSection key={feature.title} {...feature} />
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   )
 }

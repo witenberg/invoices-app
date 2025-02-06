@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { username, email, password, login_method } = body
 
-    console.log('Received signup request:', { username, email, login_method })
+    // console.log('Received signup request:', { username, email, login_method })
 
     if (!username || !email || !login_method) {
       console.log('Missing required fields')
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       await client.query('COMMIT')
       
       const user = res.rows[0]
-      console.log('User created successfully:', user)
+      // console.log('User created successfully:', user)
       return NextResponse.json({ user }, { status: 201 })
     } catch (e) {
       await client.query('ROLLBACK')

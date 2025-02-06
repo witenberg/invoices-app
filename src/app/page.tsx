@@ -1,49 +1,57 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Hero } from '@/components/Hero'
+import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Hero
-        title="Simplify Your Invoicing Process"
-        description="Create, send, and manage invoices with ease. Get paid faster and grow your business."
-      >
-        <Button asChild variant="outline" >
-          <Link href="/features">Explore Features</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/signup">Start Free Trial</Link>
-        </Button>
-      </Hero>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        <div className="min-h-screen bg-gray-100">
+          <Hero
+            title="Simplify Your Invoicing Process"
+            description="Create, send, and manage invoices with ease. Get paid faster and grow your business."
+          >
+            <Button asChild variant="outline" >
+              <Link href="/features">Explore Features</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/signup">Start Free Trial</Link>
+            </Button>
+          </Hero>
 
-      <div className="container mx-auto px-6 py-8">
-        <div className="mt-16">
-          <img src="/placeholder.jpg" alt="InvoiceApp Dashboard" className="rounded-lg shadow-xl" />
+          <div className="container mx-auto px-6 py-8">
+            <div className="mt-16">
+              <img src="/placeholder.jpg" alt="InvoiceApp Dashboard" className="rounded-lg shadow-xl" />
+            </div>
+
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <FeatureCard
+                title="Easy to Use"
+                description="Create professional invoices in minutes with our intuitive interface."
+              />
+              <FeatureCard
+                title="Get Paid Faster"
+                description="Accept online payments and automate reminders for overdue invoices."
+              />
+              <FeatureCard
+                title="Powerful Reporting"
+                description="Gain insights into your business with detailed financial reports."
+              />
+            </div>
+
+            <Testimonial
+              quote="SimpleInvoices has revolutionized our billing process. It's a game-changer for small businesses."
+              author="John Doe, CEO of TechCorp"
+            />
+
+            <PaymentMethods />
+          </div>
         </div>
-
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <FeatureCard
-            title="Easy to Use"
-            description="Create professional invoices in minutes with our intuitive interface."
-          />
-          <FeatureCard
-            title="Get Paid Faster"
-            description="Accept online payments and automate reminders for overdue invoices."
-          />
-          <FeatureCard
-            title="Powerful Reporting"
-            description="Gain insights into your business with detailed financial reports."
-          />
-        </div>
-
-        <Testimonial
-          quote="SimpleInvoices has revolutionized our billing process. It's a game-changer for small businesses."
-          author="John Doe, CEO of TechCorp"
-        />
-
-        <PaymentMethods />
-      </div>
+      </main>
+      <Footer />
     </div>
   )
 }

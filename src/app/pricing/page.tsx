@@ -2,34 +2,41 @@ import { Button } from "@/components/ui/button"
 import { Check } from 'lucide-react'
 import { Hero } from '@/components/Hero'
 import { plans, Plan } from '@/config/siteConfig'
+import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 
 export default function Pricing() {
   return (
-    <div className="min-h-screen bg-white">
-      <Hero
-        title="Simple, transparent pricing"
-        description="Choose the plan that best fits your business needs"
-      />
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        <div className="min-h-screen bg-white">
+          <Hero
+            title="Simple, transparent pricing"
+            description="Choose the plan that best fits your business needs"
+          />
 
-      <div className="container mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan) => (
-            <PricingPlan key={plan.name} {...plan} />
-          ))}
+          <div className="container mx-auto px-6 py-20">
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {plans.map((plan) => (
+                <PricingPlan key={plan.name} {...plan} />
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </main>
+      <Footer />
+    </div >
   )
 }
 
 function PricingPlan({ name, price, description, popular, features }: Plan) {
   return (
     <div
-      className={`rounded-lg p-8 ${
-        popular
-          ? "border-2 border-[#2E75B6] shadow-lg"
-          : "border border-gray-200"
-      }`}
+      className={`rounded-lg p-8 ${popular
+        ? "border-2 border-[#2E75B6] shadow-lg"
+        : "border border-gray-200"
+        }`}
     >
       {popular && (
         <span className="text-[#2E75B6] font-medium text-sm">Most Popular</span>
@@ -41,11 +48,10 @@ function PricingPlan({ name, price, description, popular, features }: Plan) {
       </div>
       <p className="text-gray-600 mt-2">{description}</p>
       <Button
-        className={`w-full mt-6 ${
-          popular
-            ? "bg-[#2E75B6] hover:bg-[#235d92]"
-            : "bg-gray-800 hover:bg-gray-900"
-        }`}
+        className={`w-full mt-6 ${popular
+          ? "bg-[#2E75B6] hover:bg-[#235d92]"
+          : "bg-gray-800 hover:bg-gray-900"
+          }`}
       >
         Get Started
       </Button>
