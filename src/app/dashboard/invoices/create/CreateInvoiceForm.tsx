@@ -1,134 +1,153 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useSession } from "next-auth/react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ExtendedUser } from "@/app/actions/user"
+import { ClientSection } from "./ClientSection"
+import { ItemsSection } from "./ItemsSection"
+import { OptionsSection } from "./OptionsSection"
+import { InvoiceSummary } from "./InvoiceSummary"
+import type { InvoiceOptions } from "@/types/invoice"
+import type { InvoiceItem } from "@/types/invoiceItem"
+import { useRouter } from "next/navigation"
 
-interface Client {
-  clientid: number
-  name: string
-  email: string
-  address: string | null
+interface FormData {
+  clientName: string
+  clientEmail: string
+  clientAddress: string
 }
 
 export function CreateInvoiceForm() {
   const { data: session } = useSession()
-  const [clients, setClients] = useState<Client[]>([])
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-  const [formData, setFormData] = useState({
+  const userId = (session?.user as any)?.userid
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(null)
+  const [formData, setFormData] = useState<FormData>({
     clientName: "",
     clientEmail: "",
     clientAddress: "",
   })
+  const [items, setItems] = useState<InvoiceItem[]>([{ id: "1", description: "", amount: null }])
+  const [options, setOptions] = useState<InvoiceOptions>({
+    currency: "USD",
+    language: "English",
+    date: new Date().toISOString().split("T")[0],
+    acceptcreditcards: false,
+    acceptpaypal: false,
+  })
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      if (!(session?.user as ExtendedUser)?.userid) return
-
-      const response = await fetch(`/api/clients?userId=${(session?.user as ExtendedUser).userid}`)
-      if (response.ok) {
-        const data = await response.json()
-        setClients(data)
-      }
+  const createNewClient = async (): Promise<number> => {
+    if (!formData.clientName || !formData.clientEmail) {
+      throw new Error("Client name and email are required")
     }
 
-    fetchClients()
-  }, [session])
+    const response = await fetch("/api/clients", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: userId,
+        name: formData.clientName,
+        email: formData.clientEmail,
+        address: formData.clientAddress,
+      }),
+    })
 
-  const handleClientSelect = (clientId: string) => {
-    const client = clients.find((c) => c.clientid.toString() === clientId)
-    if (client) {
-      setSelectedClient(client)
-      setFormData({
-        clientName: client.name,
-        clientEmail: client.email,
-        clientAddress: client.address || "",
+    if (!response.ok) {
+      throw new Error("Failed to create client")
+    }
+
+    const data = await response.json()
+    return data.clientid
+  }
+
+  const validateItems = (items: InvoiceItem[]): boolean => {
+    if (items.length === 0) return false;
+  
+    let hasValidItem = false;
+  
+    for (let i = items.length - 1; i >= 0; i--) {
+      const item = items[i];
+  
+      if (item.description && item.amount === null) return false;
+
+      if (!item.description && item.amount !== null) return false;
+
+      if (!item.description && item.amount === null) {
+        if (items.length === 1) return false;
+        items.splice(i, 1);
+      } else {
+        hasValidItem = true;
+      }
+    }
+  
+    return hasValidItem;
+  };
+  
+
+  const handleSave = async (isDraft: boolean) => {
+    if (!userId) return
+
+    try {
+      setError(null)
+      console.log (formData.clientName, formData.clientEmail)
+      if (!selectedClientId && (!formData.clientName || !formData.clientEmail)) {
+        setError("Client name and email are required")
+        return
+      }
+      if (!validateItems(items)) {
+        setError("Fix items")
+        return
+      }
+
+      const clientId = selectedClientId || (await createNewClient())
+
+      const invoice = {
+        userid: userId,
+        clientid: clientId,
+        status: isDraft ? "Draft" : "Sent",
+        options,
+        items,
+      }
+
+      const response = await fetch("/api/invoices/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(invoice),
       })
-    } else {
-      setSelectedClient(null)
-      setFormData({
-        clientName: "",
-        clientEmail: "",
-        clientAddress: "",
-      })
+
+      if (!response.ok) {
+        throw new Error("Failed to save invoice")
+      }
+
+      router.push("/dashboard/invoices")
+    } catch (error) {
+      console.error("Error saving invoice:", error)
+      setError("Failed to save invoice")
     }
   }
 
+  if (!userId) {
+    return <div>Loading...</div>
+  }
+
   return (
-    <div className="grid grid-cols-3 gap-8">
+    <div className="grid grid-cols-3 gap-8 mb-20">
       <div className="col-span-2 space-y-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">CLIENT</h2>
-          <div className="space-y-4">
-            <div>
-              <Select onValueChange={handleClientSelect}>
-                <SelectTrigger>
-                  <SelectValue placeholder="New Client" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="new">New Client</SelectItem>
-                  {clients.map((client) => (
-                    <SelectItem key={client.clientid} value={client.clientid.toString()}>
-                      {client.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="clientName">Client Name</Label>
-                <Input
-                  id="clientName"
-                  value={formData.clientName}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, clientName: e.target.value }))}
-                  placeholder="Client Name"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="clientEmail">
-                  Client Email
-                  {/* <span className="text-sm text-gray-500 font-normal ml-2">Separate multiple emails with ;</span> */}
-                </Label>
-                <Input
-                  id="clientEmail"
-                  value={formData.clientEmail}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, clientEmail: e.target.value }))}
-                  placeholder="Client Email"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="clientAddress">
-                  Client Address
-                  <span className="text-sm text-gray-500 font-normal ml-2">optional</span>
-                </Label>
-                <Input
-                  id="clientAddress"
-                  value={formData.clientAddress}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, clientAddress: e.target.value }))}
-                  placeholder="Client Address"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <ClientSection
+          userId={userId}
+          formData={formData}
+          onFormDataChange={setFormData}
+          onClientSelect={(id: number | null) => setSelectedClientId(id)}
+        />
+        <ItemsSection userId={userId} items={items} onItemsChange={setItems} />
+        <OptionsSection userId={userId} options={options} onOptionsChange={setOptions} />
       </div>
 
-      <div className="col-span-1">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="text-center mb-4">
-            <div className="text-sm text-gray-500">NEW</div>
-            <div className="text-2xl font-bold">USD 0.00</div>
-            <div className="text-sm text-gray-500">No client selected</div>
-          </div>
-        </div>
-      </div>
+      <InvoiceSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} />
     </div>
   )
 }

@@ -19,13 +19,35 @@ export async function GET(request: Request) {
       ORDER BY c.name
     `
     const result = await client.query(query, [userId])
-    console.log(result.rows)
+    console.log(result.rows);
     return NextResponse.json(result.rows)
   } catch (error) {
     console.error("Error fetching clients:", error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   } finally {
     client.release()
+  }
+}
+
+
+export async function POST(request: Request) {
+  const client = await request.json()
+  const dbClient = await pool.connect()
+
+  try {
+    const result = await dbClient.query(
+      `INSERT INTO clients (userid, name, email, address) 
+       VALUES ($1, $2, $3, $4) 
+       RETURNING clientid`,
+      [client.userId, client.name, client.email, client.address || '' ]
+    )
+
+    return NextResponse.json(result.rows[0])
+  } catch (error) {
+    console.error("Error creating client:", error)
+    return NextResponse.json({ error: "Failed to create client" }, { status: 500 })
+  } finally {
+    dbClient.release()
   }
 }
 

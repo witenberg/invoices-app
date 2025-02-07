@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { PlusCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const statuses = ["All", "Draft", "Sent", "Paid", "Refunded", "Deleted"]
 
@@ -27,10 +28,10 @@ export function ClientFilter() {
           </button>
         ))}
       </div>
-      <button onClick={() => router.push("/dashboard/invoices/create")} className="bg-blue-600 hover:bg-blue-700">
+      <Button onClick={() => router.push("/dashboard/invoices/create")} className="bg-blue-600 hover:bg-blue-700">
         <PlusCircle className="w-4 h-4 mr-2" />
         New Invoice
-      </button>
+      </Button>
     </div>
   )
 }
