@@ -4,26 +4,24 @@ import type { InvoiceStatus } from "@/types/invoice"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const userId = searchParams.get("userId") // Odczytanie userId z parametrów zapytania
+  const userId = searchParams.get("userId")
   const status = searchParams.get("status") as InvoiceStatus | null
-  console.log(userId);  // Teraz userId powinno być dostępne
-
-
 
   const client = await pool.connect()
   try {
     let query =
-      "SELECT i.*, c.name as client_name FROM invoices i JOIN clients c ON i.clientid = c.clientid WHERE i.userid = $1"
+      "SELECT i.*, c.name as client_name, COALESCE(SUM(p.amount * p.quantity), 0) as total FROM invoices i JOIN clients c ON i.clientid = c.clientid LEFT JOIN productsoninvoice p ON i.invoiceid = p.invoiceid WHERE i.userid = $1 "
     const values: any[] = [userId]
 
     if (status) {
-      query += " AND i.status = $2"
+      query += "AND i.status = $2 "
       values.push(status)
     }
 
-    query += " ORDER BY i.date DESC"
+    query += "GROUP BY i.invoiceid, c.name ORDER BY i.date DESC"
 
     const result = await client.query(query, values)
+    console.log(result.rows)
     return NextResponse.json(result.rows)
   } catch (error) {
     console.error("Error fetching data from db: ", error)

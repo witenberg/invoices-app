@@ -2,21 +2,6 @@ import type { InvoiceItem } from "./invoiceItem";
 
 export type InvoiceStatus = 'Draft' | 'Sent' | 'Paid' | 'Refunded' | 'Deleted';
 
-// export interface Invoice {
-//   invoiceid: string
-//   userid: string
-//   clientid: string
-//   status: InvoiceStatus
-//   currency: string
-//   date: string
-//   notes?: string
-//   discount?: number
-//   salestax?: number
-//   secondtax?: number
-//   acceptcreditcards: boolean
-//   acceptpaypal: boolean
-// };
-
 export interface InvoiceOptions {
   currency: string
   language: string
@@ -43,4 +28,15 @@ export interface Invoice {
   status: InvoiceStatus
   options: InvoiceOptions
   items: InvoiceItem[]
+}
+
+export interface InvoiceToDisplay {
+  invoiceid: number
+  userid: number
+  clientid: number
+  status: InvoiceStatus
+  currency: string
+  total: number
+  client_name: string
+  date: string
 }
