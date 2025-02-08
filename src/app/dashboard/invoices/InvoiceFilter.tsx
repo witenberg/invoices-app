@@ -19,16 +19,16 @@ export function ClientFilter() {
     <div className="flex items-center justify-between mb-6">
       <div className="flex gap-2">
         {statuses.map((status) => (
-          <button
+          <Button
             key={status}
             onClick={() => handleStatusChange(status)}
-            className={`px-4 py-2 rounded ${currentStatus === status ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 rounded ${currentStatus === status ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
           >
             {status}
-          </button>
+          </Button>
         ))}
       </div>
-      <Button onClick={() => router.push("/dashboard/invoices/create")} className="bg-blue-600 hover:bg-blue-700">
+      <Button onClick={() => router.push("/dashboard/invoices/create")} className="bg-blue-600 hover:bg-blue">
         <PlusCircle className="w-4 h-4 mr-2" />
         New Invoice
       </Button>

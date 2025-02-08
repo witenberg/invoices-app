@@ -10,9 +10,10 @@ interface ItemsSectionProps {
     userId: string
     items: InvoiceItem[]
     onItemsChange: (items: InvoiceItem[]) => void
+    currency: string
   }
 
-export function ItemsSection({ userId, items, onItemsChange }: ItemsSectionProps) {
+export function ItemsSection({ userId, items, onItemsChange, currency }: ItemsSectionProps) {
 
   const addItem = () => {
     onItemsChange([
@@ -52,7 +53,7 @@ export function ItemsSection({ userId, items, onItemsChange }: ItemsSectionProps
               className="flex-grow"
             />
             <div className="flex items-center gap-2 min-w-[200px]">
-              <span className="text-sm">USD</span>
+              <span className="text-sm">{currency}</span>
               <Input
                 type="number"
                 value={item.amount !== null && item.amount !== undefined ? item.amount : ""}

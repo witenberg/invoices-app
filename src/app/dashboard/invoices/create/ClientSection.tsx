@@ -24,7 +24,7 @@ interface ClientSectionProps {
 export function ClientSection({ userId, formData, onFormDataChange, onClientSelect }: ClientSectionProps) {
   const [clients, setClients] = useState<Client[]>([])
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-
+  // console.log(formData?.clientName)
   useEffect(() => {
     const fetchClients = async () => {
       const response = await fetch(`/api/clients?userId=${userId}`)
@@ -36,6 +36,15 @@ export function ClientSection({ userId, formData, onFormDataChange, onClientSele
 
     fetchClients()
   }, [userId])
+
+  useEffect(() => {
+    if (formData.clientName) {
+      const client = clients.find((client) => client.name === formData.clientName)
+      if (client) {
+        setSelectedClient(client)
+      }
+    }
+  }, [formData.clientName, clients])
 
   const handleClientSelect = (clientId: string) => {
     if (clientId === "new") {
@@ -66,9 +75,9 @@ export function ClientSection({ userId, formData, onFormDataChange, onClientSele
       <h2 className="text-lg font-semibold mb-4">CLIENT</h2>
       <div className="space-y-4">
         <div>
-          <Select onValueChange={handleClientSelect} defaultValue="new">
+        <Select onValueChange={handleClientSelect} value={selectedClient ? selectedClient.clientid.toString() : "new"}>
             <SelectTrigger>
-              <SelectValue placeholder="New Client" />
+              <SelectValue placeholder={ formData?.clientName || "New Client" } />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="new">New Client</SelectItem>
@@ -97,7 +106,7 @@ export function ClientSection({ userId, formData, onFormDataChange, onClientSele
           <div>
             <Label htmlFor="clientEmail">
               Client Email
-              <span className="text-sm text-gray-500 font-normal ml-2">Separate multiple emails with ;</span>
+              {/* <span className="text-sm text-gray-500 font-normal ml-2">Separate multiple emails with ;</span> */}
             </Label>
             <Input
               id="clientEmail"

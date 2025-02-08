@@ -24,7 +24,7 @@ const navigation = [
 export function AppSidebar({ pathname }: { pathname: string }) {
 
   return (
-    <Sidebar className="bg-[#0a2547] text-white height-100vh">
+    <Sidebar className="bg-[#0a2547] text-white">
       <SidebarHeader>
         <Link href="/dashboard/invoices" className="flex items-center space-x-2">
           <span className="text-2xl font-bold">simple.</span>

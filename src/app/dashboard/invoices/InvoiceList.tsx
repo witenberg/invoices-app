@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 import type { InvoiceToDisplay } from "@/types/invoice"
 import { ExtendedUser } from "@/app/actions/user"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export function InvoiceList() {
   const [invoices, setInvoices] = useState<InvoiceToDisplay[]>([])
@@ -12,6 +14,7 @@ export function InvoiceList() {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const statusFilter = searchParams.get("status")
+  const router = useRouter()
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -74,9 +77,15 @@ export function InvoiceList() {
             <td className="px-6 py-4 whitespace-nowrap">{invoice.client_name}</td>
             <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
             <td className="px-6 py-4 whitespace-nowrap">
-              { invoice.status === "Draft" && 
-              <button className="text-blue-600 hover:text-blue-900 mr-2">Send</button> }
-              <button className="text-green-600 hover:text-green-900 mr-2">Edit</button>
+              {invoice.status === "Draft" &&
+                <button className="text-blue-600 hover:text-blue-900 mr-2">Send</button>}
+              <Link
+                href={`/dashboard/invoices/${invoice.invoiceid}/edit`}
+                className="text-green-600 hover:text-green-900 mr-2"
+              >
+                Edit
+              </Link>
+              {/* <button className="text-green-600 hover:text-green-900 mr-2">Edit</button> */}
               <button className="text-gray-600 hover:text-gray-900">View</button>
             </td>
           </tr>

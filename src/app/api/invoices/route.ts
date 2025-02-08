@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     query += "GROUP BY i.invoiceid, c.name ORDER BY i.date DESC"
 
     const result = await client.query(query, values)
-    console.log(result.rows)
+    // console.log(result.rows)
     return NextResponse.json(result.rows)
   } catch (error) {
     console.error("Error fetching data from db: ", error)

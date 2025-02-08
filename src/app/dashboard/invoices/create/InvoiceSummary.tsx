@@ -10,15 +10,16 @@ interface InvoiceSummaryProps {
     items: InvoiceItem[]
     onSave: (isDraft: boolean) => Promise<void>
     error: string | null
+    currency: string
 }
 
-export function InvoiceSummary({ userId, clientName, items, onSave, error }: InvoiceSummaryProps) {
+export function InvoiceSummary({ userId, clientName, items, onSave, error, currency }: InvoiceSummaryProps) {
     const [isSaving, setIsSaving] = useState(false)
 
     const calculateTotal = () => {
         return items.reduce((sum, item) => {
             const quantity = item.quantity || 1
-            return sum + item.amount * quantity
+            return sum + (item.amount || 0) * quantity
         }, 0)
     }
 
@@ -38,7 +39,7 @@ export function InvoiceSummary({ userId, clientName, items, onSave, error }: Inv
         <div className="bg-white p-6 rounded-lg shadow-lg fixed right-8 top-8 w-80">
             <div className="text-center mb-6">
                 <div className="text-sm text-gray-500">NEW</div>
-                <div className="text-2xl font-bold">USD {calculateTotal().toFixed(2)}</div>
+                <div className="text-2xl font-bold">{currency} {calculateTotal().toFixed(2)}</div>
                 <div className="text-sm text-gray-600">{clientName || "No client selected"}</div>
             </div>
         

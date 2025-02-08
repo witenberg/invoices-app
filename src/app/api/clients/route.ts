@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       ORDER BY c.name
     `
     const result = await client.query(query, [userId])
-    console.log(result.rows);
+    // console.log(result.rows);
     return NextResponse.json(result.rows)
   } catch (error) {
     console.error("Error fetching clients:", error)

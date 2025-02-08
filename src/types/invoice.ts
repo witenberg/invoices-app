@@ -40,3 +40,25 @@ export interface InvoiceToDisplay {
   client_name: string
   date: string
 }
+
+export interface InvoiceToEdit {
+  invoiceid: number
+  userid: number
+  clientid: number
+  status: InvoiceStatus
+  currency: string
+  language: string
+  date: string
+  notes?: string
+  discount?: number
+  salestax?: number
+  secondtax?: number
+  acceptcreditcards: boolean
+  acceptpaypal: boolean
+  client: {
+    name: string,
+    email: string,
+    address?: string,
+  },
+  products: InvoiceItem[],
+}

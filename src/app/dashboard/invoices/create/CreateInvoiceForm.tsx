@@ -6,7 +6,7 @@ import { ClientSection } from "./ClientSection"
 import { ItemsSection } from "./ItemsSection"
 import { OptionsSection } from "./OptionsSection"
 import { InvoiceSummary } from "./InvoiceSummary"
-import type { InvoiceOptions } from "@/types/invoice"
+import type { Invoice, InvoiceOptions, InvoiceToEdit } from "@/types/invoice"
 import type { InvoiceItem } from "@/types/invoiceItem"
 import { useRouter } from "next/navigation"
 
@@ -15,23 +15,28 @@ interface FormData {
   clientEmail: string
   clientAddress: string
 }
+interface CreateInvoiceFormProps {
+  initialInvoice?: InvoiceToEdit
+}
 
-export function CreateInvoiceForm() {
+export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
   const { data: session } = useSession()
   const userId = (session?.user as any)?.userid
-  const [selectedClientId, setSelectedClientId] = useState<number | null>(null)
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(initialInvoice?.clientid || null)
   const [formData, setFormData] = useState<FormData>({
-    clientName: "",
-    clientEmail: "",
-    clientAddress: "",
+    clientName: initialInvoice?.client.name || "",
+    clientEmail: initialInvoice?.client.email || "",
+    clientAddress: initialInvoice?.client.address || "",
   })
-  const [items, setItems] = useState<InvoiceItem[]>([{ id: "1", description: "", amount: null }])
+  // console.log(initialInvoice?.products)
+  const [items, setItems] = useState<InvoiceItem[]>(
+    initialInvoice?.products || [{ id: "1", description: "", amount: null }])
   const [options, setOptions] = useState<InvoiceOptions>({
-    currency: "USD",
-    language: "English",
-    date: new Date().toISOString().split("T")[0],
-    acceptcreditcards: false,
-    acceptpaypal: false,
+    currency: initialInvoice?.currency || "USD",
+    language: initialInvoice?.language || "English",
+    date: initialInvoice?.date || new Date().toISOString().split("T")[0],
+    acceptcreditcards: initialInvoice?.acceptcreditcards || false,
+    acceptpaypal: initialInvoice?.acceptpaypal || false,
   })
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -70,9 +75,8 @@ export function CreateInvoiceForm() {
     for (let i = items.length - 1; i >= 0; i--) {
       const item = items[i];
   
-      if (item.description && item.amount === null) return false;
-
-      if (!item.description && item.amount !== null) return false;
+      if ((item.description && item.amount === null) || (!item.description && item.amount !== null)) 
+        return false;
 
       if (!item.description && item.amount === null) {
         if (items.length === 1) return false;
@@ -143,11 +147,11 @@ export function CreateInvoiceForm() {
           onFormDataChange={setFormData}
           onClientSelect={(id: number | null) => setSelectedClientId(id)}
         />
-        <ItemsSection userId={userId} items={items} onItemsChange={setItems} />
+        <ItemsSection userId={userId} items={items} onItemsChange={setItems} currency={options.currency} />
         <OptionsSection userId={userId} options={options} onOptionsChange={setOptions} />
       </div>
 
-      <InvoiceSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} />
+      <InvoiceSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} />
     </div>
   )
 }
