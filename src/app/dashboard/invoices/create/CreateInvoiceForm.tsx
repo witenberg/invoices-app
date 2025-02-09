@@ -20,6 +20,7 @@ interface CreateInvoiceFormProps {
 }
 
 export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
+  // console.log(!!initialInvoice?.invoiceid)
   const { data: session } = useSession()
   const invoiceId = initialInvoice?.invoiceid
   const userId = (session?.user as any)?.userid
@@ -153,7 +154,7 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
         <OptionsSection userId={userId} options={options} onOptionsChange={setOptions} />
       </div>
 
-      <InvoiceSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} />
+      <InvoiceSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} isEditing={!!initialInvoice?.invoiceid} />
     </div>
   )
 }

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import type { InvoiceItem } from "@/types/invoiceItem"
+import { useRouter } from "next/navigation"
 
 interface InvoiceSummaryProps {
     userId: string
@@ -11,10 +12,12 @@ interface InvoiceSummaryProps {
     onSave: (isDraft: boolean) => Promise<void>
     error: string | null
     currency: string
+    isEditing: boolean
 }
 
-export function InvoiceSummary({ userId, clientName, items, onSave, error, currency }: InvoiceSummaryProps) {
+export function InvoiceSummary({ userId, clientName, items, onSave, error, currency, isEditing }: InvoiceSummaryProps) {
     const [isSaving, setIsSaving] = useState(false)
+    const router = useRouter()
 
     const calculateTotal = () => {
         return items.reduce((sum, item) => {
@@ -27,7 +30,6 @@ export function InvoiceSummary({ userId, clientName, items, onSave, error, curre
         setIsSaving(true)
         try {
             await onSave(isDraft)
-            // router.push("/dashboard/invoices")
         } catch (error) {
             console.error("Error saving invoice:", error)
         } finally {
@@ -42,9 +44,9 @@ export function InvoiceSummary({ userId, clientName, items, onSave, error, curre
                 <div className="text-2xl font-bold">{currency} {calculateTotal().toFixed(2)}</div>
                 <div className="text-sm text-gray-600">{clientName || "No client selected"}</div>
             </div>
-        
+
             <div className="space-y-6">
-            {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
+                {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
                 <div className="flex items-center justify-between">
                     <div>
                         <div className="text-sm font-medium">Pay Automatically</div>
@@ -52,17 +54,29 @@ export function InvoiceSummary({ userId, clientName, items, onSave, error, curre
                     </div>
                 </div>
 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleSave(false)} disabled={isSaving}>
-                    {isSaving ? "Sending..." : "Send Invoice"}
-                </Button>
+                {!isEditing &&
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleSave(false)} disabled={isSaving}>
+                        {isSaving ? "Sending..." : "Send Invoice"}
+                    </Button>
+                }
 
-                <button
-                    className="w-full text-center text-blue-600 hover:text-blue-800"
+                <Button
+                    className="w-full bg-white-600 text-blue-600 border hover:border-black hover:bg-white"
                     onClick={() => handleSave(true)}
                     disabled={isSaving}
                 >
                     Save as Draft
-                </button>
+                </Button>
+
+                {isEditing && 
+                    <Button
+                        className="w-full bg-white-600 text-blue-600 border hover:border-black hover:bg-white"
+                        onClick={() => router.push("/dashboard/invoices")}
+                        disabled={isSaving}
+                    >
+                        Cancel
+                    </Button>
+                }
             </div>
         </div>
     )

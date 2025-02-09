@@ -25,7 +25,7 @@ export function ClientSection({ userId, formData, onFormDataChange, onClientSele
   const [clients, setClients] = useState<Client[]>([])
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const isEditingRef = useRef(!!formData?.clientName)
-  console.log(formData?.clientName)
+  // console.log(formData?.clientName)
   useEffect(() => {
     const fetchClients = async () => {
       const response = await fetch(`/api/clients?userId=${userId}`)

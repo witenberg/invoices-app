@@ -105,13 +105,13 @@ export const {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-         console.log("user in jwt callback: ", user)
+        //  console.log("user in jwt callback: ", user)
         token.id = (user as ExtendedUser).userid
         token.email = user.email
         token.isNewUser = (user as ExtendedUser).isNewUser
         token.login_method = (user as ExtendedUser).login_method
       }
-      console.log("token after jwt callback: ", token);
+      // console.log("token after jwt callback: ", token);
       return token
     },
     async session({ session, token }): Promise<DefaultSession & { user: ExtendedUser }> {

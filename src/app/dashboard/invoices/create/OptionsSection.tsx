@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
@@ -20,6 +19,7 @@ export function OptionsSection({ userId, options, onOptionsChange }: OptionsSect
   const updateOptions = (updates: Partial<InvoiceOptions>) => {
     onOptionsChange({ ...options, ...updates })
   }
+  // console.log(options.date)
 
   return (
     <div className="bg-white p-6 rounded-lg shadow mt-8">
@@ -59,7 +59,7 @@ export function OptionsSection({ userId, options, onOptionsChange }: OptionsSect
 
         <div>
           <Label>Date</Label>
-          <Input type="date" value={options.date} onChange={(e) => updateOptions({ date: e.target.value })} />
+          <Input type="date" value={options.date.split("T")[0]} onChange={(e) => updateOptions({ date: e.target.value })} />
         </div>
 
         <div>
