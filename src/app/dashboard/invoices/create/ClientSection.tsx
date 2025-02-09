@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,7 +24,8 @@ interface ClientSectionProps {
 export function ClientSection({ userId, formData, onFormDataChange, onClientSelect }: ClientSectionProps) {
   const [clients, setClients] = useState<Client[]>([])
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-  // console.log(formData?.clientName)
+  const isEditingRef = useRef(!!formData?.clientName)
+  console.log(formData?.clientName)
   useEffect(() => {
     const fetchClients = async () => {
       const response = await fetch(`/api/clients?userId=${userId}`)
@@ -75,7 +76,10 @@ export function ClientSection({ userId, formData, onFormDataChange, onClientSele
       <h2 className="text-lg font-semibold mb-4">CLIENT</h2>
       <div className="space-y-4">
         <div>
-        <Select onValueChange={handleClientSelect} value={selectedClient ? selectedClient.clientid.toString() : "new"}>
+        <Select 
+          onValueChange={handleClientSelect} 
+          value={selectedClient ? selectedClient.clientid.toString() : "new"}
+          disabled={isEditingRef.current}>
             <SelectTrigger>
               <SelectValue placeholder={ formData?.clientName || "New Client" } />
             </SelectTrigger>

@@ -21,6 +21,7 @@ interface CreateInvoiceFormProps {
 
 export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
   const { data: session } = useSession()
+  const invoiceId = initialInvoice?.invoiceid
   const userId = (session?.user as any)?.userid
   const [selectedClientId, setSelectedClientId] = useState<number | null>(initialInvoice?.clientid || null)
   const [formData, setFormData] = useState<FormData>({
@@ -108,6 +109,7 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
       const clientId = selectedClientId || (await createNewClient())
 
       const invoice = {
+        invoiceid: invoiceId || null,
         userid: userId,
         clientid: clientId,
         status: isDraft ? "Draft" : "Sent",
