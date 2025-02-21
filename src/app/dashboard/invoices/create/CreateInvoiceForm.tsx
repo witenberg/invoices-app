@@ -129,8 +129,8 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
       if (!response.ok) {
         throw new Error("Failed to save invoice")
       }
-
-      router.push("/dashboard/invoices")
+      const data = await response.json()
+      router.push(`/dashboard/invoices/${data.invoiceid}/details`)
     } catch (error) {
       console.error("Error saving invoice:", error)
       setError("Failed to save invoice")
@@ -154,7 +154,7 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
         <OptionsSection userId={userId} options={options} onOptionsChange={setOptions} />
       </div>
 
-      <InvoiceSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} isEditing={!!initialInvoice?.invoiceid} />
+      <InvoiceSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} invoiceId={initialInvoice?.invoiceid || null} />
     </div>
   )
 }

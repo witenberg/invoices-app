@@ -12,10 +12,10 @@ interface InvoiceSummaryProps {
     onSave: (isDraft: boolean) => Promise<void>
     error: string | null
     currency: string
-    isEditing: boolean
+    invoiceId: number | null
 }
 
-export function InvoiceSummary({ userId, clientName, items, onSave, error, currency, isEditing }: InvoiceSummaryProps) {
+export function InvoiceSummary({ userId, clientName, items, onSave, error, currency, invoiceId }: InvoiceSummaryProps) {
     const [isSaving, setIsSaving] = useState(false)
     const router = useRouter()
 
@@ -54,7 +54,7 @@ export function InvoiceSummary({ userId, clientName, items, onSave, error, curre
                     </div>
                 </div>
 
-                {!isEditing &&
+                {!invoiceId &&
                     <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleSave(false)} disabled={isSaving}>
                         {isSaving ? "Sending..." : "Send Invoice"}
                     </Button>
@@ -68,10 +68,10 @@ export function InvoiceSummary({ userId, clientName, items, onSave, error, curre
                     Save as Draft
                 </Button>
 
-                {isEditing && 
+                {invoiceId && 
                     <Button
                         className="w-full bg-white-600 text-blue-600 border hover:border-black hover:bg-white"
-                        onClick={() => router.push("/dashboard/invoices")}
+                        onClick={() => router.push(`/dashboard/invoices`)}
                         disabled={isSaving}
                     >
                         Cancel
