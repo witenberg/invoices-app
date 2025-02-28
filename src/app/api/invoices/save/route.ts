@@ -37,11 +37,11 @@ export async function POST(request: Request) {
       );
 
       // Usuwamy wszystkie produkty powiązane z fakturą
-      await client.query("DELETE FROM productsoninvoice WHERE invoiceid = $1", [invoiceid]);
       await client.query(
         "DELETE FROM products WHERE productid IN (SELECT productid FROM productsoninvoice WHERE invoiceid = $1)",
         [invoiceid]
       );
+      await client.query("DELETE FROM productsoninvoice WHERE invoiceid = $1", [invoiceid]);
     } else {
       // Tryb dodawania - nowa faktura
       const invoiceResult = await client.query(

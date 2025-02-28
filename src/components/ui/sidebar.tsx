@@ -2,8 +2,13 @@ import type React from "react"
 import { cn } from "@/lib/utils"
 
 export function Sidebar({ className, children }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("w-64 h-screen flex flex-col", className)}>{children}</div>
+  return (
+    <div className={cn("w-64 min-h-screen flex flex-col sticky top-0", className)}>
+      {children}
+    </div>
+  )
 }
+
 
 export function SidebarHeader({ className, children }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("p-4", className)}>{children}</div>

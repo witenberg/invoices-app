@@ -12,6 +12,11 @@ export const {
 } = NextAuth({
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60,
+    updateAge: 30 * 60,
+  },
+  jwt: {
+    maxAge: 60 * 60,
   },
   providers: [
     CredentialsProvider({
@@ -111,7 +116,7 @@ export const {
         token.isNewUser = (user as ExtendedUser).isNewUser
         token.login_method = (user as ExtendedUser).login_method
       }
-      // console.log("token after jwt callback: ", token);
+      console.log("token after jwt callback: ", token);
       return token
     },
     async session({ session, token }): Promise<DefaultSession & { user: ExtendedUser }> {
