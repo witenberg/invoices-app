@@ -49,7 +49,7 @@ export function FilterComponent({
         className="bg-blue-600 hover:bg-blue"
       >
         <PlusCircle className="w-4 h-4 mr-2" />
-        {createLabel} {kind.charAt(0).toUpperCase() + kind.slice(1)}
+        {createLabel} {kind.charAt(0).toUpperCase() + kind.slice(1, -1)}
       </Button>
     </div>
   )
