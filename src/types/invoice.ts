@@ -1,4 +1,5 @@
 import type { InvoiceItem } from "./invoiceItem";
+import { Subscription } from "./subscription";
 
 export type InvoiceStatus = 'Draft' | 'Sent' | 'Paid' | 'Refunded' | 'Deleted';
 
@@ -61,4 +62,9 @@ export interface InvoiceToEdit {
     address?: string,
   },
   products: InvoiceItem[],
+}
+
+export interface InvoiceSubscription {
+  invoice: InvoiceToEdit
+  subscription: Subscription
 }

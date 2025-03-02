@@ -1,45 +1,63 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
-import { ClientSection } from "../../../../components/dahboard/create/ClientSection"
-import { ItemsSection } from "../../../../components/dahboard/create/ItemsSection"
-import { OptionsSection } from "../../../../components/dahboard/create/OptionsSection"
-import { InvoiceSummary } from "./InvoiceSummary"
-import type { Invoice, InvoiceOptions, InvoiceToEdit } from "@/types/invoice"
+import { ClientSection } from "@/components/dahboard/create/ClientSection"
+import { ItemsSection } from "@/components/dahboard/create/ItemsSection"
+import { OptionsSection } from "@/components/dahboard/create/OptionsSection"
+import { SubscriptionSummary } from "./SubscriptionSummary"
+import type { InvoiceOptions, InvoiceSubscription, } from "@/types/invoice"
 import type { InvoiceItem } from "@/types/invoiceItem"
 import { useRouter } from "next/navigation"
+import { ScheduleSection } from "./ScheduleSection"
+import { SubscriptionFrequency } from "@/types/subscription"
 
 interface FormData {
   clientName: string
   clientEmail: string
   clientAddress: string
 }
-interface CreateInvoiceFormProps {
-  initialInvoice?: InvoiceToEdit
+
+interface ScheduleData {
+  startDate: Date | undefined;
+  frequency: SubscriptionFrequency;
+  endDate: Date | undefined;
 }
 
-export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
+interface CreateInvoiceFormProps {
+  initialInvoice?: InvoiceSubscription
+}
+
+export function CreateSubscriptionForm({ initialInvoice }: CreateInvoiceFormProps) {
   // console.log(!!initialInvoice?.invoiceid)
   const { data: session } = useSession()
-  const invoiceId = initialInvoice?.invoiceid
+  const invoiceId = initialInvoice?.invoice.invoiceid
   const userId = (session?.user as any)?.userid
-  const [selectedClientId, setSelectedClientId] = useState<number | null>(initialInvoice?.clientid || null)
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(initialInvoice?.invoice.clientid || null)
   const [formData, setFormData] = useState<FormData>({
-    clientName: initialInvoice?.client.name || "",
-    clientEmail: initialInvoice?.client.email || "",
-    clientAddress: initialInvoice?.client.address || "",
+    clientName: initialInvoice?.invoice.client.name || "",
+    clientEmail: initialInvoice?.invoice.client.email || "",
+    clientAddress: initialInvoice?.invoice.client.address || "",
   })
   // console.log(initialInvoice?.products)
   const [items, setItems] = useState<InvoiceItem[]>(
-    initialInvoice?.products || [{ id: "1", description: "", amount: null }])
+    initialInvoice?.invoice.products || [{ id: "1", description: "", amount: null }])
   const [options, setOptions] = useState<InvoiceOptions>({
-    currency: initialInvoice?.currency || "USD",
-    language: initialInvoice?.language || "English",
-    date: initialInvoice?.date || new Date().toISOString().split("T")[0],
-    acceptcreditcards: initialInvoice?.acceptcreditcards || false,
-    acceptpaypal: initialInvoice?.acceptpaypal || false,
+    currency: initialInvoice?.invoice.currency || "USD",
+    language: initialInvoice?.invoice.language || "English",
+    date: initialInvoice?.invoice.date || new Date().toISOString().split("T")[0],
+    acceptcreditcards: initialInvoice?.invoice.acceptcreditcards || false,
+    acceptpaypal: initialInvoice?.invoice.acceptpaypal || false,
   })
+  const [schedule, setSchedule] = useState<ScheduleData>({
+    startDate: initialInvoice?.subscription?.start_date
+      ? new Date(initialInvoice.subscription.start_date)
+      : new Date(),
+    frequency: initialInvoice?.subscription?.frequency || "Monthly",
+    endDate: initialInvoice?.subscription?.end_date
+      ? new Date(initialInvoice.subscription.end_date)
+      : undefined,
+  });
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
@@ -97,7 +115,6 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
 
     try {
       setError(null)
-      console.log (formData.clientName, formData.clientEmail)
       if (!selectedClientId && (!formData.clientName || !formData.clientEmail)) {
         setError("Client name and email are required")
         return
@@ -116,6 +133,11 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
         status: isDraft ? "Draft" : "Sent",
         options,
         items,
+        subscription: {
+          start_date: schedule.startDate?.toISOString().split("T")[0] || null,
+          frequency: schedule.frequency,
+          end_date: schedule.endDate?.toISOString().split("T")[0] || null,
+        }
       }
 
       const response = await fetch("/api/invoices/save", {
@@ -137,6 +159,7 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
     }
   }
 
+
   if (!userId) {
     return <div>Loading...</div>
   }
@@ -151,10 +174,11 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
           onClientSelect={(id: number | null) => setSelectedClientId(id)}
         />
         <ItemsSection userId={userId} items={items} onItemsChange={setItems} currency={options.currency} />
+        <ScheduleSection initialSchedule={schedule} onScheduleChange={(newSchedule) => {setSchedule(newSchedule)}}/>
         <OptionsSection userId={userId} options={options} onOptionsChange={setOptions} />
       </div>
 
-      <InvoiceSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} invoiceId={initialInvoice?.invoiceid || null} />
+      <SubscriptionSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} invoiceId={initialInvoice?.invoice.invoiceid || null} frequency={schedule.frequency } />
     </div>
   )
 }

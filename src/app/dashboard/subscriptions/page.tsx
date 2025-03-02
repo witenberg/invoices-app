@@ -7,7 +7,7 @@ export default function Subscriptions() {
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-4">Subscriptions</h1>
             <SessionProvider>
-                <FilterComponent statuses={['All', 'Active', 'Paused', 'Deleted']} kind="Subscriptions" />
+                <FilterComponent statuses={['All', 'Active', 'Paused', 'Deleted']} kind="subscriptions" />
                 <SubscriptionList/>
             </SessionProvider>
         </div>

@@ -9,7 +9,6 @@ export function Sidebar({ className, children }: React.HTMLAttributes<HTMLDivEle
   )
 }
 
-
 export function SidebarHeader({ className, children }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("p-4", className)}>{children}</div>
 }
