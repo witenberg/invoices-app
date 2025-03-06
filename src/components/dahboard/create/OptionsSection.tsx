@@ -57,10 +57,12 @@ export function OptionsSection({ userId, options, onOptionsChange }: OptionsSect
           </Select>
         </div>
 
-        <div>
-          <Label>Date</Label>
-          <Input type="date" value={options.date.split("T")[0]} onChange={(e) => updateOptions({ date: e.target.value })} />
-        </div>
+        {options.date &&
+          <div>
+            <Label>Date</Label>
+            <Input type="date" value={options.date.split("T")[0]} onChange={(e) => updateOptions({ date: e.target.value })} />
+          </div>
+        }
 
         <div>
           <Label>
@@ -141,7 +143,7 @@ export function OptionsSection({ userId, options, onOptionsChange }: OptionsSect
             <span className="text-sm text-gray-500 font-normal ml-2">optional</span>
           </Label>
           <div className="flex gap-4">
-          <Input
+            <Input
               placeholder="Tax Name (Tax ID)"
               value={options.secondtax?.name || ""}
               onChange={(e) =>

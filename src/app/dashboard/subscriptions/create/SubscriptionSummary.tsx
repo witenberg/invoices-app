@@ -13,11 +13,11 @@ interface SubscriptionSummaryProps {
     onSave: (isDraft: boolean) => Promise<void>
     error: string | null
     currency: string
-    invoiceId: number | null
+    subId: number | null
     frequency: SubscriptionFrequency
 }
 
-export function SubscriptionSummary({ userId, clientName, items, onSave, error, currency, invoiceId, frequency }: SubscriptionSummaryProps) {
+export function SubscriptionSummary({ userId, clientName, items, onSave, error, currency, subId, frequency }: SubscriptionSummaryProps) {
     const [isSaving, setIsSaving] = useState(false)
     const router = useRouter()
 
@@ -57,13 +57,13 @@ export function SubscriptionSummary({ userId, clientName, items, onSave, error, 
                     </div>
                 </div>
 
-                {!invoiceId &&
+                {!subId &&
                     <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleSave(false)} disabled={isSaving}>
                         {isSaving ? "Activating..." : "Activate"}
                     </Button>
                 }
 
-                {!invoiceId &&
+                {!subId &&
                     <Button
                         className="w-full bg-white-600 text-blue-600 border hover:border-black hover:bg-white"
                         onClick={() => handleSave(true)}
@@ -73,13 +73,13 @@ export function SubscriptionSummary({ userId, clientName, items, onSave, error, 
                     </Button>
                 }
 
-                {invoiceId &&
+                {subId &&
                     <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleSave(false)} disabled={isSaving}>
                         {isSaving ? "Saving..." : "Save changes"}
                     </Button>
                 }
 
-                {invoiceId &&
+                {subId &&
                     <Button
                         className="w-full bg-white-600 text-blue-600 border hover:border-black hover:bg-white"
                         onClick={() => router.push(`/dashboard/subscriptions`)}

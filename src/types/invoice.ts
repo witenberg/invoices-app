@@ -6,7 +6,7 @@ export type InvoiceStatus = 'Draft' | 'Sent' | 'Paid' | 'Refunded' | 'Deleted';
 export interface InvoiceOptions {
   currency: string
   language: string
-  date: string
+  date?: string
   notes?: string
   discount?: number
   isDiscountAmount?: boolean
@@ -61,10 +61,29 @@ export interface InvoiceToEdit {
     email: string,
     address?: string,
   },
-  products: InvoiceItem[],
+  products: InvoiceItem[]
 }
 
 export interface InvoiceSubscription {
   invoice: InvoiceToEdit
   subscription: Subscription
+}
+
+export interface InvoicePrototype {
+  userid: number
+  clientid: number
+  currency: string
+  language: string
+  notes?: string
+  discount?: number
+  salestax?: number
+  secondtax?: number
+  acceptcreditcards: boolean
+  acceptpaypal: boolean
+  client: {
+    name: string,
+    email: string,
+    address?: string,
+  }
+  products: InvoiceItem[]
 }

@@ -10,7 +10,7 @@ import type { InvoiceOptions, InvoiceSubscription, } from "@/types/invoice"
 import type { InvoiceItem } from "@/types/invoiceItem"
 import { useRouter } from "next/navigation"
 import { ScheduleSection } from "./ScheduleSection"
-import { SubscriptionFrequency } from "@/types/subscription"
+import { Subscription, SubscriptionFrequency } from "@/types/subscription"
 
 interface FormData {
   clientName: string
@@ -19,43 +19,43 @@ interface FormData {
 }
 
 interface ScheduleData {
-  startDate: Date | undefined;
-  frequency: SubscriptionFrequency;
-  endDate: Date | undefined;
+  startDate: Date
+  frequency: SubscriptionFrequency
+  endDate: Date | undefined
 }
 
-interface CreateInvoiceFormProps {
-  initialInvoice?: InvoiceSubscription
+interface CreateSubFormProps {
+  initialSub?: Subscription
 }
 
-export function CreateSubscriptionForm({ initialInvoice }: CreateInvoiceFormProps) {
-  // console.log(!!initialInvoice?.invoiceid)
+export function CreateSubscriptionForm({ initialSub }: CreateSubFormProps) {
+  // console.log(!!initialSub?.invoiceid)
   const { data: session } = useSession()
-  const invoiceId = initialInvoice?.invoice.invoiceid
+  const subId = initialSub?.subscriptionid
   const userId = (session?.user as any)?.userid
-  const [selectedClientId, setSelectedClientId] = useState<number | null>(initialInvoice?.invoice.clientid || null)
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(initialSub?.invoicePrototype.clientid || null)
   const [formData, setFormData] = useState<FormData>({
-    clientName: initialInvoice?.invoice.client.name || "",
-    clientEmail: initialInvoice?.invoice.client.email || "",
-    clientAddress: initialInvoice?.invoice.client.address || "",
+    clientName: initialSub?.invoicePrototype.client.name || "",
+    clientEmail: initialSub?.invoicePrototype.client.email || "",
+    clientAddress: initialSub?.invoicePrototype.client.address || "",
   })
-  // console.log(initialInvoice?.products)
+  // console.log(initialSub?.products)
   const [items, setItems] = useState<InvoiceItem[]>(
-    initialInvoice?.invoice.products || [{ id: "1", description: "", amount: null }])
+    initialSub?.invoicePrototype.products || [{ id: "1", description: "", amount: null }])
   const [options, setOptions] = useState<InvoiceOptions>({
-    currency: initialInvoice?.invoice.currency || "USD",
-    language: initialInvoice?.invoice.language || "English",
-    date: initialInvoice?.invoice.date || new Date().toISOString().split("T")[0],
-    acceptcreditcards: initialInvoice?.invoice.acceptcreditcards || false,
-    acceptpaypal: initialInvoice?.invoice.acceptpaypal || false,
+    currency: initialSub?.invoicePrototype.currency || "USD",
+    language: initialSub?.invoicePrototype.language || "English",
+    // date: initialSub?.invoicePrototype.date || new Date().toISOString().split("T")[0],
+    acceptcreditcards: initialSub?.invoicePrototype.acceptcreditcards || false,
+    acceptpaypal: initialSub?.invoicePrototype.acceptpaypal || false,
   })
   const [schedule, setSchedule] = useState<ScheduleData>({
-    startDate: initialInvoice?.subscription?.start_date
-      ? new Date(initialInvoice.subscription.start_date)
+    startDate: initialSub?.start_date
+      ? new Date(initialSub.start_date)
       : new Date(),
-    frequency: initialInvoice?.subscription?.frequency || "Monthly",
-    endDate: initialInvoice?.subscription?.end_date
-      ? new Date(initialInvoice.subscription.end_date)
+    frequency: initialSub?.frequency || "Monthly",
+    endDate: initialSub?.end_date
+      ? new Date(initialSub.end_date)
       : undefined,
   });
   const [error, setError] = useState<string | null>(null)
@@ -89,13 +89,13 @@ export function CreateSubscriptionForm({ initialInvoice }: CreateInvoiceFormProp
 
   const validateItems = (items: InvoiceItem[]): boolean => {
     if (items.length === 0) return false;
-  
+
     let hasValidItem = false;
-  
+
     for (let i = items.length - 1; i >= 0; i--) {
       const item = items[i];
-  
-      if ((item.description && item.amount === null) || (!item.description && item.amount !== null)) 
+
+      if ((item.description && item.amount === null) || (!item.description && item.amount !== null))
         return false;
 
       if (!item.description && item.amount === null) {
@@ -105,10 +105,10 @@ export function CreateSubscriptionForm({ initialInvoice }: CreateInvoiceFormProp
         hasValidItem = true;
       }
     }
-  
+
     return hasValidItem;
   };
-  
+
 
   const handleSave = async (isDraft: boolean) => {
     if (!userId) return
@@ -126,36 +126,44 @@ export function CreateSubscriptionForm({ initialInvoice }: CreateInvoiceFormProp
 
       const clientId = selectedClientId || (await createNewClient())
 
-      const invoice = {
-        invoiceid: invoiceId || null,
-        userid: userId,
-        clientid: clientId,
-        status: isDraft ? "Draft" : "Sent",
-        options,
-        items,
-        subscription: {
-          start_date: schedule.startDate?.toISOString().split("T")[0] || null,
-          frequency: schedule.frequency,
-          end_date: schedule.endDate?.toISOString().split("T")[0] || null,
+      const sub: Subscription = {
+        subscriptionid: subId || undefined,
+        start_date: schedule.startDate.toISOString().split("T")[0],
+        frequency: schedule.frequency,
+        end_date: schedule.endDate?.toISOString().split("T")[0] || undefined,
+        status: isDraft ? "Paused" : "Active",
+        invoicePrototype: {
+          userid: userId,
+          clientid: clientId,
+          currency: options.currency,
+          language: options.language,
+          acceptcreditcards: options.acceptcreditcards,
+          acceptpaypal: options.acceptpaypal,
+          client: {
+            name: formData.clientName,
+            email: formData.clientEmail,
+            address: formData.clientAddress,
+          },
+          products: items
         }
       }
 
-      const response = await fetch("/api/invoices/save", {
+      const response = await fetch("/api/subscriptions/save", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(invoice),
+        body: JSON.stringify(sub),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to save invoice")
+        throw new Error("Failed to save subscription")
       }
       const data = await response.json()
-      router.push(`/dashboard/invoices/${data.invoiceid}/details`)
+      router.push(`/dashboard/subscriptions/${data.subscriptionid}/details`)
     } catch (error) {
-      console.error("Error saving invoice:", error)
-      setError("Failed to save invoice")
+      console.error("Error saving subscription:", error)
+      setError("Failed to save subscription")
     }
   }
 
@@ -174,11 +182,11 @@ export function CreateSubscriptionForm({ initialInvoice }: CreateInvoiceFormProp
           onClientSelect={(id: number | null) => setSelectedClientId(id)}
         />
         <ItemsSection userId={userId} items={items} onItemsChange={setItems} currency={options.currency} />
-        <ScheduleSection initialSchedule={schedule} onScheduleChange={(newSchedule) => {setSchedule(newSchedule)}}/>
+        <ScheduleSection initialSchedule={schedule} onScheduleChange={(newSchedule) => { setSchedule(newSchedule) }} />
         <OptionsSection userId={userId} options={options} onOptionsChange={setOptions} />
       </div>
 
-      <SubscriptionSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} invoiceId={initialInvoice?.invoice.invoiceid || null} frequency={schedule.frequency } />
+      <SubscriptionSummary userId={userId} clientName={formData.clientName} items={items} onSave={handleSave} error={error} currency={options.currency} subId={initialSub?.subscriptionid || null} frequency={schedule.frequency} />
     </div>
   )
 }

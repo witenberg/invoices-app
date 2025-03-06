@@ -15,7 +15,7 @@ import { subscription_frequency } from "@/constants/frequency";
 
 interface ScheduleSectionProps {
   onScheduleChange: (schedule: {
-    startDate: Date | undefined;
+    startDate: Date;
     frequency: SubscriptionFrequency;
     endDate: Date | undefined;
   }) => void;
@@ -30,7 +30,7 @@ export function ScheduleSection({
   onScheduleChange,
   initialSchedule,
 }: ScheduleSectionProps) {
-  const [startDate, setStartDate] = useState<Date | undefined>(
+  const [startDate, setStartDate] = useState<Date>(
     initialSchedule?.startDate || new Date()
   );
   const [frequency, setFrequency] = useState<SubscriptionFrequency>(
@@ -85,7 +85,7 @@ export function ScheduleSection({
                 : ""
             }
             onChange={(e) => {
-              const date = e.target.value ? new Date(e.target.value) : undefined;
+              const date = e.target.value ? new Date(e.target.value) : new Date();
               setStartDate(date);
               handleScheduleChange();
             }}
