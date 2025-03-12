@@ -123,7 +123,11 @@ export function CreateSubscriptionForm({ initialSub }: CreateSubFormProps) {
         setError("Fix items")
         return
       }
-
+      if (schedule.endDate && schedule.endDate.toISOString() < schedule.startDate.toISOString()) {
+        setError("Wrong end date")
+        return
+      }
+      
       const clientId = selectedClientId || (await createNewClient())
 
       const sub: Subscription = {
@@ -160,7 +164,7 @@ export function CreateSubscriptionForm({ initialSub }: CreateSubFormProps) {
         throw new Error("Failed to save subscription")
       }
       const data = await response.json()
-      router.push(`/dashboard/subscriptions/${data.subscriptionid}/details`)
+      router.push(`/dashboard/subscriptions/${data.subid}/details`)
     } catch (error) {
       console.error("Error saving subscription:", error)
       setError("Failed to save subscription")

@@ -6,10 +6,10 @@ import { useSearchParams } from "next/navigation"
 import { ExtendedUser } from "@/app/actions/user"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { InvoiceSubscription } from "@/types/invoice"
+import { SubscriptionToDisplay } from "@/types/subscription"
 
 export function SubscriptionList() {
-    const [subscriptions, setSubscriptions] = useState<InvoiceSubscription[]>([])
+    const [subscriptions, setSubscriptions] = useState<SubscriptionToDisplay[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const { data: session, status } = useSession()
     const searchParams = useSearchParams()
@@ -64,22 +64,24 @@ export function SubscriptionList() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Currency</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Invoice</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frequency</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
                 {subscriptions.map((sub) => (
-                    <tr key={sub.subscription.subscriptionid}>
-                        <td className="px-6 py-4 whitespace-nowrap">{sub.subscription.status}</td>
+                    <tr key={sub.subscriptionid}>
+                        <td className="px-6 py-4 whitespace-nowrap">{sub.status}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{sub.currency}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{sub.total}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{sub.client_name}</td>
                         {/* func to calculate next invoice date here */}
-                        <td className="px-6 py-4 whitespace-nowrap">{new Date(sub.subscription.start_date).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{new Date(sub.next_invoice).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{sub.frequency}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                             <Link
-                                href={`/dashboard/invoices/${sub.subscription.subscriptionid}/edit`}
+                                href={`/dashboard/subscriptions/${sub.subscriptionid}/edit`}
                                 className="text-green-600 hover:text-green-900 mr-2"
                             >
                                 Edit
