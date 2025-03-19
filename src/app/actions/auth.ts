@@ -1,7 +1,7 @@
 import NextAuth, { type DefaultSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { compare } from "bcrypt"
+import { compare } from "bcryptjs"
 import { findUserByEmail, addUser, type GoogleUser, type CredentialsUser, type ExtendedUser } from "./user"
 
 export const {

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { compare } from 'bcrypt'
+import { compare } from 'bcryptjs'
 import pool from '@/lib/db'
 
 export async function POST(req: Request) {
