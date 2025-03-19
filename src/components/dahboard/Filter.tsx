@@ -20,12 +20,15 @@ export function FilterComponent({
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentStatus = searchParams.get("status") || "All"
+  
+  statuses = ["All", ...statuses]
 
   const handleStatusChange = (status: string) => {
     router.push(
       `${basePath}/${kind}${status === "All" ? "" : `?status=${status}`}`
     )
   }
+
 
   return (
     <div className="flex items-center justify-between mb-6">
