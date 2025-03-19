@@ -1,15 +1,38 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
-export async function middleware(req: Request) {
-  const cookieHeader = req.headers.get("cookie")
+const protectedRoutes = ["/dashboard"]
+const publicRoutes = ["/login", "/signup", "/", "/features", "/pricing", "/blog"]
 
-  if (!cookieHeader || !cookieHeader.includes("authjs.session-token")) {
+export async function middleware(req: NextRequest) {
+  const path = req.nextUrl.pathname
+
+  const isProtectedRoute = protectedRoutes.some((route) => path.startsWith(route))
+  const isPublicRoute = publicRoutes.some((route) => path === route)
+
+  const isAuthenticated = req.cookies.has("authjs.session-token")
+
+  if (isProtectedRoute && !isAuthenticated) {
     return NextResponse.redirect(new URL("/login", req.url))
+  }
+
+  if (isPublicRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL("/dashboard/invoices", req.url))
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+
+    // Public routes that should redirect when authenticated
+    "/login",
+    "/signup",
+    "/",
+    "/features",
+    "/pricing",
+    "/blog"
+  ],
 }
+
