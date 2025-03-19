@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Invoices App
 
-## Getting Started
+A web application for managing invoices, built with React, Next.js, Node.js, and PostgreSQL. This project runs in Docker containers and is currently in the development phase, with features subject to change and expansion.
 
-First, run the development server:
+## About
+This is a learning project where I explore and practice technologies like React, Next.js, Node.js, PostgreSQL, and Docker. It’s inspired by the existing application [Simple Invoices](https://simpleinvoices.io), which served as a reference for its core concept.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Requirements
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How to Run
+1. Clone the repository:
+   git clone https://github.com/your-username/invoices-app.git
+   cd invoices-app
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Start the application with Docker:
+   docker-compose up --build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Open your browser and go to:
+   http://localhost:3000
 
-## Learn More
+## Configuration
+- **Application**: Runs on port 3000.
+- **Database**: PostgreSQL with the name SimpleInvoices, user postgres, and password postgres.
+- **Environment Variables**: Example configuration in .env.example:
+   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/SimpleInvoices
+  In Docker, this variable is set in docker-compose.yml with swapped "localhost" to "db".
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
+- Dockerfile: Configuration for the application container.
+- docker-compose.yml: Defines the app and db services.
+- init.sql: Initializes the database structure.
+- .env.example: Example file with environment variables.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Troubleshooting
+- If the database fails to start, check the logs:
+   docker logs invoices-app-db-1
+- To stop and clean up everything:
+   docker-compose down -v
