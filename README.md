@@ -11,28 +11,28 @@ This is a learning project where I explore and practice technologies like React,
 
 ## How to Run
 1. Clone the repository:
-   \`\`\`bash
+   ```bash
    git clone https://github.com/your-username/invoices-app.git
    cd invoices-app
-   \`\`\`
+   ```
 
 2. Start the application with Docker:
-   \`\`\`bash
+   ```bash
    docker-compose up --build
-   \`\`\`
+   ```
 
 3. Open your browser and go to:
-   \`\`\`bash
+   ```bash
    http://localhost:3000
-   \`\`\`
+   ```
 
 ## Configuration
 - **Application**: Runs on port 3000.
 - **Database**: PostgreSQL with the name SimpleInvoices, user postgres, and password postgres.
 - **Environment Variables**: Example configuration in .env.example:
-   \`\`\`bash
+   ```bash
    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/SimpleInvoices
-   \`\`\`
+   ```
   In Docker, this variable is set in docker-compose.yml with swapped "localhost" to "db".
 
 ## Project Structure
@@ -43,10 +43,10 @@ This is a learning project where I explore and practice technologies like React,
 
 ## Troubleshooting
 - If the database fails to start, check the logs:
-   \`\`\`bash
+   ```bash
    docker logs invoices-app-db-1
-   \`\`\`
+   ```
 - To stop and clean up everything:
-   \`\`\`bash
+   ```bash
    docker-compose down -v
-   \`\`\`
+   ```
