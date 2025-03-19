@@ -40,13 +40,13 @@ export function ScheduleSection({
   const [showEndDate, setShowEndDate] = useState(!!initialSchedule?.endDate);
 
   const FREQUENCY_TO_DAYS = {
-    Weekly: 7,
+    "Weekly": 7,
     "Every 2 weeks": 14,
     "Every 4 weeks": 28,
-    Monthly: 30,
-    Quarterly: 90,
+    "Monthly": 30,
+    "Quarterly": 90,
     "Every 6 months": 180,
-    Yearly: 365,
+    "Yearly": 365,
   };
 
   const calculateInvoicesCount = () => {

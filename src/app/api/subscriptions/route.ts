@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const values: any[] = [userId]
 
     if (status) {
-      query += "AND i.status = $2 "
+      query += "AND s.status = $2 "
       values.push(status)
     }
 
