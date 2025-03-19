@@ -1,4 +1,6 @@
-'use client'
+"use client"
+
+import type React from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -7,44 +9,52 @@ import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn, signOut } from "next-auth/react"
-import { Navbar } from '@/components/Navbar'
-import { Footer } from '@/components/Footer'
+import { Navbar } from "@/components/Navbar"
+import { Footer } from "@/components/Footer"
+import { Loader2 } from "lucide-react"
 
 export default function Signup() {
   const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setIsLoading(true)
+    setError(null)
+
     const formData = new FormData(event.currentTarget)
 
     try {
       await signOut({ redirect: false })
       const result = signIn("credentials", {
-        username: formData.get('username'),
-        email: formData.get('email'),
-        password: formData.get('password'),
-        redirect: false
-      });
+        username: formData.get("username"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+        redirect: false,
+      })
 
-      router.push('/welcome')
+      router.push("/welcome")
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred')
+      setError(error instanceof Error ? error.message : "An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
     }
   }
 
+  const handleGoogleSignIn = () => {
+    setIsGoogleLoading(true)
+    signIn("google", { callbackUrl: "/welcome" })
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
-
-
-        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="flex-1 bg-white flex flex-col justify-center py-8 sm:px-6 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
-            <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-              Create an account
-            </h2>
+            <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Create an account</h2>
             <p className="mt-2 text-center text-sm text-gray-600">
               Or{" "}
               <Link href="/login" className="font-medium text-[#2E75B6] hover:text-[#235d92]">
@@ -70,8 +80,15 @@ export default function Signup() {
                 </div>
                 {error && <div className="text-red-500">{error}</div>}
                 <div>
-                  <Button type="submit" className="w-full bg-[#2E75B6] hover:bg-[#235d92]">
-                    Create your account
+                  <Button type="submit" className="w-full bg-[#2E75B6] hover:bg-[#235d92]" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating account...
+                      </>
+                    ) : (
+                      "Create your account"
+                    )}
                   </Button>
                 </div>
               </form>
@@ -88,11 +105,18 @@ export default function Signup() {
 
                 <div className="mt-6">
                   <Button
-                    onClick={() => signIn('google', { callbackUrl: '/welcome' })}
-                    // onClick={() => signIn('google')}
+                    onClick={handleGoogleSignIn}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    disabled={isGoogleLoading}
                   >
-                    Sign up with Google
+                    {isGoogleLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      "Sign up with Google"
+                    )}
                   </Button>
                 </div>
               </div>

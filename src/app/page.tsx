@@ -9,7 +9,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-white">
           <Hero
             title="Simplify Your Invoicing Process"
             description="Create, send, and manage invoices with ease. Get paid faster and grow your business."
@@ -44,7 +44,7 @@ export default function Home() {
 
             <Testimonial
               quote="SimpleInvoices has revolutionized our billing process. It's a game-changer for small businesses."
-              author="John Doe, CEO of TechCorp"
+              author="Someone, somewhere"
             />
 
             <PaymentMethods />

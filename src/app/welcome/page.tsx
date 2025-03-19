@@ -14,9 +14,10 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { ExtendedUser } from '../actions/user'
+import { currencies, languages } from '@/constants/options'
 
-const currencies = ['PLN', 'EUR', 'USD', 'GBP']
-const languages = ['Polski', 'English', 'Deutsch', 'Français']
+// const currencies = ['PLN', 'EUR', 'USD', 'GBP']
+// const languages = ['Polski', 'English', 'Deutsch', 'Français']
 
 export default function Welcome() {
   const [currency, setCurrency] = useState('')
@@ -24,7 +25,7 @@ export default function Welcome() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { data: session, status } = useSession();
-  console.log("session data: ", session);
+  // console.log("session data: ", session);
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -35,7 +36,7 @@ export default function Welcome() {
         setLoading(false);
       }
     }
-  }, [status, session]); // Dodajemy `status`, żeby efekt odpalał się, gdy się zmienia
+  }, [status, session]);
 
   const id = session?.user?.id;
 
