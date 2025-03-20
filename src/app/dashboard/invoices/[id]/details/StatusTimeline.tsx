@@ -1,4 +1,4 @@
-import { FileText, Mail, Eye, CreditCard } from "lucide-react"
+import { FileText, Mail, Eye, CreditCard } from 'lucide-react'
 
 export function StatusTimeline({ invoice }: { invoice: any }) {
   const states = [
@@ -29,33 +29,27 @@ export function StatusTimeline({ invoice }: { invoice: any }) {
   ]
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-8 relative">
-      <div className="flex justify-between items-center gap-4">
-        {states.map((state, index) => (
-          <div key={state.name} className="flex-1 flex flex-col items-center z-10">
-            <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 
-                ${state.reached ? "bg-blue-900 text-white" : "bg-white border-2 border-blue-100"}`}
-            >
-              <state.icon className={`w-6 h-6 ${state.reached ? "text-white" : "text-blue-400"}`} />
-            </div>
-            <div className="text-sm font-semibold text-gray-900">{state.name}</div>
-            <div className="text-sm text-gray-500">{state.date}</div>
+      <div className="bg-white p-4 md:p-8 rounded-md">
+        <div className="relative">
+          <div className="gap-x-4 flex items-center justify-between">
+            {states.map((state) => (
+              <div 
+                key={state.name}
+                className={`grow-0 gap-y-3 z-10 flex flex-col items-center text-sm`}
+              >
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full ${
+                  state.reached ? 'bg-blue-900 text-white' : 'bg-white border border-gray-200'
+                }`}>
+                  <state.icon className="w-5 h-5" />
+                </div>
+                <div className="text-xs text-center mt-2">
+                  <div className="text-blue-900 font-bold tracking-wider uppercase">{state.name}</div>
+                  <div className="mt-1 text-gray-500">{state.date}</div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
-      <div
-        className="absolute h-[2px] bg-gray-200 top-14 left-0 right-0 mx-12"
-        style={{
-          background: `linear-gradient(to right, 
-            #1e3a8a ${states[0].reached ? "25%" : "0%"}, 
-            #1e3a8a ${states[1].reached ? "50%" : "25%"}, 
-            #1e3a8a ${states[2].reached ? "75%" : "50%"}, 
-            #1e3a8a ${states[3].reached ? "100%" : "75%"}, 
-            #e5e7eb 100%)`,
-        }}
-      />
-    </div>
   )
 }
-

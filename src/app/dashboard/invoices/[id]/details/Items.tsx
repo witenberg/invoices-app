@@ -1,6 +1,5 @@
 import pool from "@/lib/db";
 
-// Funkcja pobierająca produkty oraz sumę total
 export async function getItems(invoiceId: string) {
   const client = await pool.connect();
   const products = await client.query(
@@ -11,17 +10,16 @@ export async function getItems(invoiceId: string) {
     [invoiceId],
   );
 
-  const total = products.rows.reduce((sum, item) => sum + item.quantity * Number(item.amount), 0);
+  // const total = products.rows.reduce((sum, item) => sum + item.quantity * Number(item.amount), 0);
 
-  return { products: products.rows, total };
+  return { products: products.rows };
 }
 
-// Komponent Reactowy do wyświetlania produktów
 export async function Items({ invoiceId }: { invoiceId: string }) {
   const { products } = await getItems(invoiceId);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 mt-4">
+    <div className="bg-white rounded-lg shadow-sm p-6">
       <h2 className="text-sm font-semibold text-blue-600 mb-4">ITEMS</h2>
       <div className="space-y-4">
         {products.map((item) => (

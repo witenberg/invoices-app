@@ -47,7 +47,7 @@ export function InvoiceActions({ invoiceId }: { invoiceId: string }) {
             <Button className="w-full bg-white-600 text-blue-600 border hover:border-black hover:bg-white" onClick={handleCopyLink}>
                 Copy Link
             </Button>
-            <Button className="w-full text-red-600 hover:text-red-700" variant="outline" onClick={handleDelete}>
+            <Button className="w-full bg-white-600 text-red-600 border hover:border-black hover:bg-white" onClick={handleDelete}>
                 Delete
             </Button>
         </div>

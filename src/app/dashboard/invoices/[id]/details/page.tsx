@@ -2,20 +2,24 @@ import pool from "@/lib/db"
 import { notFound } from "next/navigation"
 import { FinancialSummary } from "./FinancialSummary";
 import { InvoiceActions } from "./InvoiceActions";
-import { getItems, Items } from "./Items";
+import { Items } from "./Items";
 import { Payments } from "./Payments";
 import { StatusTimeline } from "./StatusTimeline";
 import { InvoiceSummary } from "./InvoiceSummary";
+
 
 async function getInvoice(id: string) {
     try {
         const client = await pool.connect();
         const invoice = await client.query(`
-      SELECT i.*, c.name as client_name, c.email as client_email
+      SELECT i.*, c.name as client_name, c.email as client_email, COALESCE(SUM(p.amount * p.quantity), 0) as total
       FROM invoices i
       JOIN clients c ON i.clientid = c.clientid
+      LEFT JOIN productsoninvoice p ON i.invoiceid = p.invoiceid
       WHERE i.invoiceid = $1
+      GROUP BY i.invoiceid, c.name, c.email
     `, [id])
+        // console.log(invoice.rows[0])
         return invoice.rows[0]
     } catch (error) {
         console.error("Database Error:", error)
@@ -29,46 +33,46 @@ export default async function InvoiceDetailsPage({
 }: { params: { id: string } }) {
     const { id } = await params
     const invoice = await getInvoice(id)
-    const { total } = await getItems(id)
 
     if (!invoice) {
         notFound()
     }
 
     return (
-        <div className="flex flex-col gap-4 p-6 max-w-7xl mx-auto">
-            <div className="bg-gray-100 p-4 rounded-lg">
-                <h2 className="text-lg font-semibold mb-2">Status Timeline</h2>
-                <StatusTimeline invoice={invoice} />
+        <div className="flex flex-col max-w-7xl mx-auto bg-white">
+            <div className="border-b pb-4 px-6 pt-6">
+                <h1 className="text-2xl font-bold text-blue-800">Invoice {id}</h1>
             </div>
-
-            <div className="bg-gray-100 p-4 rounded-lg">
-                <h2 className="text-lg font-semibold mb-2">Financial Summary</h2>
-                <FinancialSummary invoice={invoice} />
-            </div>
-
-            <div className="flex gap-4">
-                <div className="flex-1 bg-gray-100 p-4 rounded-lg">
-                    <h2 className="text-lg font-semibold mb-2">Items</h2>
-                    <Items invoiceId={id} />
-                </div>
-
-                <div className="w-80 space-y-4">
-                    <div className="bg-gray-100 p-4 rounded-lg">
-                        <h2 className="text-lg font-semibold mb-2">Invoice Summary</h2>
-                        <InvoiceSummary invoice={invoice} total={total} />
+            
+            <div className="flex p-6 gap-6">
+                <div className="flex-1 space-y-8">
+                    <div className="bg-white rounded-lg border shadow-sm">
+                        <StatusTimeline invoice={invoice} />
                     </div>
 
-                    <div className="bg-gray-100 p-4 rounded-lg">
-                        <h2 className="text-lg font-semibold mb-2">Actions</h2>
-                        <InvoiceActions invoiceId={id} />
+                    <div className="bg-white rounded-lg border shadow-sm">
+                        <FinancialSummary invoice={invoice} />
+                    </div>
+
+                    <div className="bg-white rounded-lg border shadow-sm">
+                        <Items invoiceId={id} />
+                    </div>
+
+                    <div className="bg-white rounded-lg border shadow-sm">
+                        <Payments />
                     </div>
                 </div>
-            </div>
 
-            <div className="bg-gray-100 p-4 rounded-lg">
-                <h2 className="text-lg font-semibold mb-2">Payments</h2>
-                <Payments />
+                <div className="w-80 sticky top-6 self-start">
+                    <div className="bg-white rounded-lg border shadow-sm">
+                        <div className="p-6">
+                            <InvoiceSummary invoice={invoice} />
+                        </div>
+                        <div className="p-6 pt-0">
+                            <InvoiceActions invoiceId={id} />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )
