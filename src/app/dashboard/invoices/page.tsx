@@ -1,14 +1,18 @@
 import { SessionProvider } from "next-auth/react"
 import { InvoiceList } from "./InvoiceList"
 import { FilterComponent } from "@/components/dahboard/Filter"
-import { subscription_statuses } from "@/constants/statuses"
+import { invoice_statuses } from "@/constants/statuses"
+import CreateButton from "@/components/dahboard/CreateButton"
 
 export default function InvoicesPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-12 py-8">
       <h1 className="text-2xl font-bold mb-4">Invoices</h1>
       <SessionProvider>
-        <FilterComponent statuses={subscription_statuses} kind="invoices" />
+        <div className="flex justify-between">
+          <FilterComponent statuses={invoice_statuses} kind="invoices" />
+          <CreateButton kind="invoices" />
+        </div>
         <InvoiceList />
       </SessionProvider>
     </div>

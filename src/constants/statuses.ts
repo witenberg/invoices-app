@@ -1,4 +1,4 @@
-export const subscription_statuses: string[] = [
+export const invoice_statuses: string[] = [
     "Draft",
     "Sent",
     "Paid",
@@ -6,7 +6,7 @@ export const subscription_statuses: string[] = [
     "Deleted",
   ] as const;
 
-export const invoice_statuses: string[] = [
+export const subscription_statuses: string[] = [
     'Active', 
     'Paused', 
     'Deleted'

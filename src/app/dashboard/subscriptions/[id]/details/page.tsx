@@ -1,5 +1,7 @@
-import { Items, getItems } from "./Items";
+import { ItemsSummary } from "@/components/dahboard/details/ItemsSummary";
+import { ScheduleSummary } from "./ScheduleSummary";
 import pool from "@/lib/db"
+import InvoicesSummary from "./InvoicesSummary";
 
 async function getSub(id: string) {
     try {
@@ -25,8 +27,37 @@ export default async function SubscriptionDetails({
 
 
     return (
-        <div>
-            <Items subId={id} />
-        </div>
-    )
+            <div className="flex flex-col max-w-7xl mx-auto bg-white">
+                <div className="border-b pb-4 px-6 pt-6">
+                    <h1 className="text-2xl font-bold text-blue-800">Subscription {id}</h1>
+                </div>
+                
+                <div className="flex p-6 gap-6">
+                    <div className="flex-1 space-y-8">
+                        <div className="bg-white rounded-lg border shadow-sm">
+                            <ScheduleSummary nextInvoice="" frequency={sub.frequency} totalRevenue={1} totalInvoices={3} />
+                        </div>
+    
+                        <div className="bg-white rounded-lg border shadow-sm">
+                            <ItemsSummary type="subscription" id={id} />
+                        </div>
+    
+                        <div className="bg-white rounded-lg border shadow-sm">
+                            <InvoicesSummary id={id}/>
+                        </div>
+                    </div>
+    
+                    <div className="w-80 sticky top-6 self-start">
+                        <div className="bg-white rounded-lg border shadow-sm">
+                            <div className="p-6">
+                                {/* <InvoiceSummary invoice={invoice} /> */}
+                            </div>
+                            <div className="p-6 pt-0">
+                                {/* <InvoiceActions invoiceId={id} /> */}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
 }

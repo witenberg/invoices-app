@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -16,8 +15,6 @@ import { useSession } from 'next-auth/react'
 import { ExtendedUser } from '../actions/user'
 import { currencies, languages } from '@/constants/options'
 
-// const currencies = ['PLN', 'EUR', 'USD', 'GBP']
-// const languages = ['Polski', 'English', 'Deutsch', 'Français']
 
 export default function Welcome() {
   const [currency, setCurrency] = useState('')
@@ -25,7 +22,6 @@ export default function Welcome() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { data: session, status } = useSession();
-  // console.log("session data: ", session);
 
   useEffect(() => {
     if (status === 'authenticated') {

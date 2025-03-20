@@ -1,22 +1,20 @@
 import pool from "@/lib/db";
 
-export async function getItems(invoiceId: string) {
+export async function getItems(type: string, id: string) {
   const client = await pool.connect();
   const products = await client.query(
     `SELECT products.productid, products.name as product_name, p.amount, p.quantity
-     FROM productsoninvoice p 
+     FROM productson${type} p 
      JOIN products ON products.productid = p.productid 
-     WHERE p.invoiceid = $1`,
-    [invoiceId],
+     WHERE p.${type}id = $1`,
+    [id],
   );
-
-  // const total = products.rows.reduce((sum, item) => sum + item.quantity * Number(item.amount), 0);
 
   return { products: products.rows };
 }
 
-export async function Items({ invoiceId }: { invoiceId: string }) {
-  const { products } = await getItems(invoiceId);
+export async function ItemsSummary({ type, id }: { type: string, id: string }) {
+  const { products } = await getItems(type, id);
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">

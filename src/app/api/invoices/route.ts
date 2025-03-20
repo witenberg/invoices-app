@@ -6,6 +6,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const userId = searchParams.get("userId")
   const status = searchParams.get("status") as InvoiceStatus | null
+  const subId = searchParams.get("subId") as Number | null
 
   const client = await pool.connect()
   try {
@@ -16,6 +17,11 @@ export async function GET(request: Request) {
     if (status) {
       query += "AND i.status = $2 "
       values.push(status)
+    }
+
+    if (subId) {
+      query += "AND i.subscriptionid = $3 "
+      values.push(subId)
     }
 
     query += "GROUP BY i.invoiceid, c.name ORDER BY i.date DESC"

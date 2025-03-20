@@ -2,7 +2,7 @@ import pool from "@/lib/db"
 import { notFound } from "next/navigation"
 import { FinancialSummary } from "./FinancialSummary";
 import { InvoiceActions } from "./InvoiceActions";
-import { Items } from "./Items";
+import { ItemsSummary } from "../../../../../components/dahboard/details/ItemsSummary";
 import { Payments } from "./Payments";
 import { StatusTimeline } from "./StatusTimeline";
 import { InvoiceSummary } from "./InvoiceSummary";
@@ -55,7 +55,7 @@ export default async function InvoiceDetailsPage({
                     </div>
 
                     <div className="bg-white rounded-lg border shadow-sm">
-                        <Items invoiceId={id} />
+                        <ItemsSummary type="invoice" id={id} />
                     </div>
 
                     <div className="bg-white rounded-lg border shadow-sm">

@@ -5,16 +5,18 @@ import { useSession } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 import type { InvoiceToDisplay } from "@/types/invoice"
 import { ExtendedUser } from "@/app/actions/user"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 
-export function InvoiceList() {
+interface InvoiceListProps {
+  subId?: string
+}
+
+export function InvoiceList({ subId }: InvoiceListProps) {
   const [invoices, setInvoices] = useState<InvoiceToDisplay[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const statusFilter = searchParams.get("status")
-  const router = useRouter()
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -25,6 +27,7 @@ export function InvoiceList() {
         `/api/invoices?${new URLSearchParams({
           userId: (session.user as ExtendedUser).userid,
           status: statusFilter || "",
+          subId: subId || "",
         })}`,
       )
 
@@ -63,34 +66,40 @@ export function InvoiceList() {
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Currency</th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+          {!subId &&
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+          }
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
         </tr>
       </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {invoices.map((invoice) => (
-          <tr key={invoice.invoiceid}>
-            <td className="px-6 py-4 whitespace-nowrap">{invoice.status}</td>
-            <td className="px-6 py-4 whitespace-nowrap">{invoice.currency}</td>
-            <td className="px-6 py-4 whitespace-nowrap">{invoice.total}</td>
-            <td className="px-6 py-4 whitespace-nowrap">{invoice.client_name}</td>
-            <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              {invoice.status === "Draft" &&
-                <button className="text-blue-600 hover:text-blue-900 mr-2">Send</button>}
-              <Link
-                href={`/dashboard/invoices/${invoice.invoiceid}/edit`}
-                className="text-green-600 hover:text-green-900 mr-2"
-              >
-                Edit
-              </Link>
-              {/* <button className="text-green-600 hover:text-green-900 mr-2">Edit</button> */}
-              <button className="text-gray-600 hover:text-gray-900">View</button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
+      {!subId &&
+        <tbody className="bg-white divide-y divide-gray-200">
+          {invoices.map((invoice) => (
+            <tr key={invoice.invoiceid}>
+              <td className="px-6 py-4 whitespace-nowrap">{invoice.status}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{invoice.currency}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{invoice.total}</td>
+              {!subId &&
+                <td className="px-6 py-4 whitespace-nowrap">{invoice.client_name}</td>
+              }
+              <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {invoice.status === "Draft" &&
+                  <button className="text-blue-600 hover:text-blue-900 mr-2">Send</button>}
+                <Link
+                  href={`/dashboard/invoices/${invoice.invoiceid}/edit`}
+                  className="text-green-600 hover:text-green-900 mr-2"
+                >
+                  Edit
+                </Link>
+                {/* <button className="text-green-600 hover:text-green-900 mr-2">Edit</button> */}
+                <button className="text-gray-600 hover:text-gray-900">View</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      }
     </table>
   )
 }
