@@ -145,6 +145,7 @@ CREATE TABLE public.invoices (
     secondtax numeric(10,2),
     acceptcreditcards boolean DEFAULT false,
     acceptpaypal boolean DEFAULT false,
+    subscriptionid integer,
     CONSTRAINT invoices_language_check CHECK (((language)::text = ANY ((ARRAY['Polski'::character varying, 'English'::character varying, 'Deutsch'::character varying, 'Français'::character varying])::text[]))),
     CONSTRAINT invoices_status_check CHECK (((status)::text = ANY (ARRAY[('Draft'::character varying)::text, ('Sent'::character varying)::text, ('Paid'::character varying)::text, ('Refunded'::character varying)::text, ('Deleted'::character varying)::text])))
 );
@@ -282,6 +283,7 @@ CREATE TABLE public.subscriptions (
     frequency character varying(20) NOT NULL,
     end_date date,
     status character varying(20) NOT NULL,
+    next_invoice date,
     CONSTRAINT subscriptions_frequency_check CHECK (((frequency)::text = ANY (ARRAY[('Weekly'::character varying)::text, ('Every 2 weeks'::character varying)::text, ('Every 4 weeks'::character varying)::text, ('Monthly'::character varying)::text, ('Quarterly'::character varying)::text, ('Every 6 months'::character varying)::text, ('Yearly'::character varying)::text]))),
     CONSTRAINT subscriptions_status_check CHECK (((status)::text = ANY (ARRAY[('Active'::character varying)::text, ('Paused'::character varying)::text, ('Deleted'::character varying)::text])))
 );
