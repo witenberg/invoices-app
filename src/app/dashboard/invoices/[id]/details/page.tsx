@@ -9,8 +9,8 @@ import { InvoiceSummary } from "./InvoiceSummary";
 
 
 async function getInvoice(id: string) {
+    const client = await pool.connect();
     try {
-        const client = await pool.connect();
         const invoice = await client.query(`
       SELECT i.*, c.name as client_name, c.email as client_email, COALESCE(SUM(p.amount * p.quantity), 0) as total
       FROM invoices i
@@ -24,6 +24,8 @@ async function getInvoice(id: string) {
     } catch (error) {
         console.error("Database Error:", error)
         throw new Error("Failed to fetch invoice")
+    } finally {
+        client.release()
     }
 }
 
@@ -43,7 +45,7 @@ export default async function InvoiceDetailsPage({
             <div className="border-b pb-4 px-6 pt-6">
                 <h1 className="text-2xl font-bold text-blue-800">Invoice {id}</h1>
             </div>
-            
+
             <div className="flex p-6 gap-6">
                 <div className="flex-1 space-y-8">
                     <div className="bg-white rounded-lg border shadow-sm">

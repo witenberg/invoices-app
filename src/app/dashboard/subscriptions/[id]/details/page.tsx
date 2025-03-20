@@ -4,8 +4,8 @@ import pool from "@/lib/db"
 import InvoicesSummary from "./InvoicesSummary";
 
 async function getSub(id: string) {
+    const client = await pool.connect();
     try {
-        const client = await pool.connect();
         const sub = await client.query(`
       SELECT s.*, c.name as client_name, c.email as client_email
       FROM subscriptions s
@@ -16,6 +16,8 @@ async function getSub(id: string) {
     } catch (error) {
         console.error("Database Error:", error)
         throw new Error("Failed to fetch subscription")
+    } finally {
+        client.release()
     }
 }
 
