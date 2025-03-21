@@ -15,13 +15,13 @@ export async function GET(request: Request) {
     const values: any[] = [userId]
 
     if (status) {
-      query += "AND i.status = $2 "
-      values.push(status)
+      values.push(status);
+      query += `AND i.status = $${values.length} `;
     }
 
     if (subId) {
-      query += "AND i.subscriptionid = $3 "
-      values.push(subId)
+      values.push(subId);
+      query += `AND i.subscriptionid = $${values.length} `;
     }
 
     query += "GROUP BY i.invoiceid, c.name ORDER BY i.date DESC"

@@ -6,11 +6,12 @@ import { ClientSection } from "@/components/dahboard/create/ClientSection"
 import { ItemsSection } from "@/components/dahboard/create/ItemsSection"
 import { OptionsSection } from "@/components/dahboard/create/OptionsSection"
 import { SubscriptionSummary } from "./SubscriptionSummary"
-import type { InvoiceOptions, InvoiceSubscription, } from "@/types/invoice"
+import type { InvoiceOptions } from "@/types/invoice"
 import type { InvoiceItem } from "@/types/invoiceItem"
 import { useRouter } from "next/navigation"
 import { ScheduleSection } from "./ScheduleSection"
 import { Subscription, SubscriptionFrequency } from "@/types/subscription"
+import { validateItems } from "@/app/actions/items"
 
 interface FormData {
   clientName: string
@@ -41,7 +42,7 @@ export function CreateSubscriptionForm({ initialSub }: CreateSubFormProps) {
   })
   // console.log(initialSub?.products)
   const [items, setItems] = useState<InvoiceItem[]>(
-    initialSub?.invoicePrototype.products || [{ id: "1", description: "", amount: null }])
+    initialSub?.invoicePrototype.products || [{ id: "1", name: "", amount: null }])
   const [options, setOptions] = useState<InvoiceOptions>({
     currency: initialSub?.invoicePrototype.currency || "USD",
     language: initialSub?.invoicePrototype.language || "English",
@@ -86,29 +87,6 @@ export function CreateSubscriptionForm({ initialSub }: CreateSubFormProps) {
     const data = await response.json()
     return data.clientid
   }
-
-  const validateItems = (items: InvoiceItem[]): boolean => {
-    if (items.length === 0) return false;
-
-    let hasValidItem = false;
-
-    for (let i = items.length - 1; i >= 0; i--) {
-      const item = items[i];
-
-      if ((item.description && item.amount === null) || (!item.description && item.amount !== null))
-        return false;
-
-      if (!item.description && item.amount === null) {
-        if (items.length === 1) return false;
-        items.splice(i, 1);
-      } else {
-        hasValidItem = true;
-      }
-    }
-
-    return hasValidItem;
-  };
-
 
   const handleSave = async (isDraft: boolean) => {
     if (!userId) return
@@ -185,7 +163,7 @@ export function CreateSubscriptionForm({ initialSub }: CreateSubFormProps) {
           onFormDataChange={setFormData}
           onClientSelect={(id: number | null) => setSelectedClientId(id)}
         />
-        <ItemsSection userId={userId} items={items} onItemsChange={setItems} currency={options.currency} />
+        <ItemsSection items={items} onItemsChange={setItems} currency={options.currency} />
         <ScheduleSection initialSchedule={schedule} onScheduleChange={(newSchedule) => { setSchedule(newSchedule) }} />
         <OptionsSection userId={userId} options={options} onOptionsChange={setOptions} />
       </div>

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const client = await pool.connect()
   try {
     let query =
-      "SELECT s.subscriptionid, s.status, s.currency, s.frequency, c.name as client_name, COALESCE(SUM(p.amount * p.quantity), 0) as total FROM subscriptions s JOIN clients c ON s.clientid = c.clientid LEFT JOIN productsonsubscription p ON s.subscriptionid = p.subscriptionid WHERE s.userid = $1 "
+      "SELECT s.subscriptionid, s.status, s.currency, s.frequency, s.next_invoice, c.name as client_name, COALESCE(SUM(p.amount * p.quantity), 0) as total FROM subscriptions s JOIN clients c ON s.clientid = c.clientid LEFT JOIN productsonsubscription p ON s.subscriptionid = p.subscriptionid WHERE s.userid = $1 "
     const values: any[] = [userId]
 
     if (status) {
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       values.push(status)
     }
 
-    query += "GROUP BY s.subscriptionid, s.status, s.currency, s.frequency, c.name" // order by
+    query += "GROUP BY s.subscriptionid, s.status, s.currency, s.frequency, s.next_invoice, c.name" // order by
 
     const result = await client.query(query, values)
     // console.log(result.rows)

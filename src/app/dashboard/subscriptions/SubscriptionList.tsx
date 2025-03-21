@@ -76,8 +76,7 @@ export function SubscriptionList() {
                         <td className="px-6 py-4 whitespace-nowrap">{sub.currency}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{sub.total}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{sub.client_name}</td>
-                        {/* func to calculate next invoice date here */}
-                        <td className="px-6 py-4 whitespace-nowrap">{new Date(sub.next_invoice).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">{sub.next_invoice ? new Date(sub.next_invoice).toLocaleDateString() : "-"}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{sub.frequency}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                             <Link

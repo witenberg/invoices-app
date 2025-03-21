@@ -86,4 +86,5 @@ export interface InvoicePrototype {
     address?: string,
   }
   products: InvoiceItem[]
+  subscriptionid?: number
 }

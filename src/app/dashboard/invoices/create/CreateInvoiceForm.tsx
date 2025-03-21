@@ -6,9 +6,10 @@ import { ClientSection } from "../../../../components/dahboard/create/ClientSect
 import { ItemsSection } from "../../../../components/dahboard/create/ItemsSection"
 import { OptionsSection } from "../../../../components/dahboard/create/OptionsSection"
 import { InvoiceSummary } from "./InvoiceSummary"
-import type { Invoice, InvoiceOptions, InvoiceToEdit } from "@/types/invoice"
+import type { InvoiceOptions, InvoiceToEdit } from "@/types/invoice"
 import type { InvoiceItem } from "@/types/invoiceItem"
 import { useRouter } from "next/navigation"
+import { validateItems } from "@/app/actions/items"
 
 interface FormData {
   clientName: string
@@ -32,7 +33,13 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
   })
   // console.log(initialInvoice?.products)
   const [items, setItems] = useState<InvoiceItem[]>(
-    initialInvoice?.products || [{ id: "1", description: "", amount: null }])
+    initialInvoice?.products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      amount: product.amount,
+      quantity: product.quantity ?? 1,
+    })) || [{ id: "1", name: "", amount: null, quantity: 1 }]
+  )
   const [options, setOptions] = useState<InvoiceOptions>({
     currency: initialInvoice?.currency || "USD",
     language: initialInvoice?.language || "English",
@@ -69,29 +76,6 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
     return data.clientid
   }
 
-  const validateItems = (items: InvoiceItem[]): boolean => {
-    if (items.length === 0) return false;
-  
-    let hasValidItem = false;
-  
-    for (let i = items.length - 1; i >= 0; i--) {
-      const item = items[i];
-  
-      if ((item.description && item.amount === null) || (!item.description && item.amount !== null)) 
-        return false;
-
-      if (!item.description && item.amount === null) {
-        if (items.length === 1) return false;
-        items.splice(i, 1);
-      } else {
-        hasValidItem = true;
-      }
-    }
-  
-    return hasValidItem;
-  };
-  
-
   const handleSave = async (isDraft: boolean) => {
     if (!userId) return
 
@@ -115,7 +99,12 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
         clientid: clientId,
         status: isDraft ? "Draft" : "Sent",
         options,
-        items,
+        items: items.map((item: InvoiceItem) => ({
+          id: parseInt(item.id),
+          name: item.name,
+          amount: item.amount, 
+          quantity: item.quantity ?? 1, 
+        })),
       }
 
       const response = await fetch("/api/invoices/save", {
@@ -150,7 +139,7 @@ export function CreateInvoiceForm({ initialInvoice }: CreateInvoiceFormProps) {
           onFormDataChange={setFormData}
           onClientSelect={(id: number | null) => setSelectedClientId(id)}
         />
-        <ItemsSection userId={userId} items={items} onItemsChange={setItems} currency={options.currency} />
+        <ItemsSection items={items} onItemsChange={setItems} currency={options.currency} />
         <OptionsSection userId={userId} options={options} onOptionsChange={setOptions} />
       </div>
 

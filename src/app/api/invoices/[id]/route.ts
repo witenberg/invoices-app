@@ -23,14 +23,6 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
         }
 
-        const productsQuery = `
-      SELECT products.productid, products.name as product_name, p.amount, p.quantity
-      FROM productsoninvoice p 
-      JOIN products ON products.productid = p.productid 
-      WHERE p.invoiceid = $1;
-    `;
-        const productsResult = await client.query(productsQuery, [id]);
-
         const invoiceRow = invoiceResult.rows[0];
 
         const invoiceData: InvoiceToEdit = {
@@ -52,12 +44,7 @@ export async function GET(request: Request) {
                 email: invoiceRow.client_email,
                 address: invoiceRow.client_address || undefined,
             },
-            products: productsResult.rows.map((row) => ({
-                id: row.productid as string,
-                description: row.product_name as string,
-                amount: row.amount as number,
-                quantity: row.quantity as number,
-            })),
+            products: invoiceRow.products
         };
 
         return NextResponse.json(invoiceData);

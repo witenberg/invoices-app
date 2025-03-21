@@ -1,26 +1,26 @@
 "use client"
 
-import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { X, Database } from "lucide-react"
 import type { InvoiceItem } from "@/types/invoiceItem"
 
 interface ItemsSectionProps {
-    userId: string
     items: InvoiceItem[]
     onItemsChange: (items: InvoiceItem[]) => void
     currency: string
   }
 
-export function ItemsSection({ userId, items, onItemsChange, currency }: ItemsSectionProps) {
+export function ItemsSection({ items, onItemsChange, currency }: ItemsSectionProps) {
 
   const addItem = () => {
+    const nextId = Math.max(...items.map(item => Number(item.id))) + 1;
+
     onItemsChange([
       ...items,
       {
-        id: Math.random().toString(36).substr(2, 9),
-        description: "",
+        id: nextId.toString(),
+        name: "",
         amount: null,
       },
     ])
@@ -48,8 +48,8 @@ export function ItemsSection({ userId, items, onItemsChange, currency }: ItemsSe
           <div key={item.id} className="flex items-center gap-4">
             <Input
               placeholder="Item description"
-              value={item.description}
-              onChange={(e) => updateItem(item.id, { description: e.target.value })}
+              value={item.name}
+              onChange={(e) => updateItem(item.id, { name: e.target.value })}
               className="flex-grow"
             />
             <div className="flex items-center gap-2 min-w-[200px]">
