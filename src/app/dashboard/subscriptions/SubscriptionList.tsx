@@ -71,7 +71,11 @@ export function SubscriptionList() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
                 {subscriptions.map((sub) => (
-                    <tr key={sub.subscriptionid}>
+                    <tr
+                        key={sub.subscriptionid}
+                        onClick={() => router.push(`/dashboard/subscriptions/${sub.subscriptionid}/details`)}
+                        className="cursor-pointer hover:bg-gray-100"
+                    >
                         <td className="px-6 py-4 whitespace-nowrap">{sub.status}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{sub.currency}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{sub.total}</td>
@@ -82,6 +86,7 @@ export function SubscriptionList() {
                             <Link
                                 href={`/dashboard/subscriptions/${sub.subscriptionid}/edit`}
                                 className="text-green-600 hover:text-green-900 mr-2"
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 Edit
                             </Link>

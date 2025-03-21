@@ -23,14 +23,6 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: "Subscription not found" }, { status: 404 });
         }
 
-        const productsQuery = `
-      SELECT p.productid, p.name as product_name, ps.amount, ps.quantity
-      FROM products p
-      JOIN productsonsubscription ps ON p.productid = ps.productid 
-      WHERE ps.subscriptionid = $1;
-    `;
-        const productsResult = await client.query(productsQuery, [id]);
-
         const subRow = subResult.rows[0];
 
         const subData: Subscription = {
@@ -55,15 +47,9 @@ export async function GET(request: Request) {
                     email: subRow.client_email,
                     address: subRow.client_address || undefined,
                 },
-                products: productsResult.rows.map((row) => ({
-                    id: row.productid as string,
-                    description: row.product_name as string,
-                    amount: row.amount as number,
-                    quantity: row.quantity as number,
-                }))
+                products: subRow.products
             }
         };
-        console.log(subData)
 
         return NextResponse.json(subData);
     } catch (error) {

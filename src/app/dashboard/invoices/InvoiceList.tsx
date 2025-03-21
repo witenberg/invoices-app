@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation"
 import type { InvoiceToDisplay } from "@/types/invoice"
 import { ExtendedUser } from "@/app/actions/user"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 interface InvoiceListProps {
   subId?: string
@@ -17,6 +18,7 @@ export function InvoiceList({ subId }: InvoiceListProps) {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const statusFilter = searchParams.get("status")
+  const router = useRouter()
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -75,7 +77,11 @@ export function InvoiceList({ subId }: InvoiceListProps) {
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
         {invoices.map((invoice) => (
-          <tr key={invoice.invoiceid}>
+          <tr 
+          key={invoice.invoiceid}
+          onClick={() => router.push(`/dashboard/subscriptions/${invoice.invoiceid}/details`)}
+          className="cursor-pointer hover:bg-gray-100"
+          >
             <td className="px-6 py-4 whitespace-nowrap">{invoice.status}</td>
             <td className="px-6 py-4 whitespace-nowrap">{invoice.currency}</td>
             <td className="px-6 py-4 whitespace-nowrap">{invoice.total}</td>
@@ -90,6 +96,7 @@ export function InvoiceList({ subId }: InvoiceListProps) {
                 <Link
                   href={`/dashboard/invoices/${invoice.invoiceid}/edit`}
                   className="text-green-600 hover:text-green-900 mr-2"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   Edit
                 </Link>

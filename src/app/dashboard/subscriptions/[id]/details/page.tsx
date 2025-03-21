@@ -26,6 +26,7 @@ export default async function SubscriptionDetails({
 }: { params: { id: string } }) {
     const { id } = await params
     const sub = await getSub(id)
+    console.log(sub)
 
 
     return (
@@ -37,7 +38,13 @@ export default async function SubscriptionDetails({
                 <div className="flex p-6 gap-6">
                     <div className="flex-1 space-y-8">
                         <div className="bg-white rounded-lg border shadow-sm">
-                            <ScheduleSummary nextInvoice="" frequency={sub.frequency} totalRevenue={1} totalInvoices={3} />
+                            <ScheduleSummary 
+                            nextInvoice={sub.next_invoice.toLocaleDateString()} 
+                            frequency={sub.frequency} 
+                            totalRevenue={1} 
+                            totalInvoices={3} 
+                            endDate={sub.endDate?.toLocaleDateString()} 
+                            />
                         </div>
     
                         <div className="bg-white rounded-lg border shadow-sm">

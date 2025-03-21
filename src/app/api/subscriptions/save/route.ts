@@ -89,12 +89,10 @@ export async function POST(request: Request) {
       subid = subscriptionResult.rows[0].subscriptionid;
     }
 
-    console.log("start_date: ", sub.start_date)
-    console.log("today_date: ", date.toISOString().split("T")[0])
     if (sub.start_date == date.toISOString().split("T")[0]) {
-      console.log("warunek spelniony!!!")
       makeInvoice(sub.invoicePrototype, subid);
     }
+    
     return NextResponse.json({ success: true, subid });
   } catch (error) {
     console.error("Error saving subscription:", error);
