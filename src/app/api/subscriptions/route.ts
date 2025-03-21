@@ -10,7 +10,14 @@ export async function GET(request: Request) {
   const client = await pool.connect()
   try {
     let query =
-      "SELECT s.subscriptionid, s.status, s.currency, s.frequency, s.next_invoice, c.name as client_name, COALESCE(SUM(p.amount * p.quantity), 0) as total FROM subscriptions s JOIN clients c ON s.clientid = c.clientid LEFT JOIN productsonsubscription p ON s.subscriptionid = p.subscriptionid WHERE s.userid = $1 "
+      `SELECT s.subscriptionid, s.status, s.currency, s.frequency, s.next_invoice,
+       c.name as client_name, COALESCE(
+        (SELECT SUM((p->>'amount')::numeric * (p->>'quantity')::numeric) 
+         FROM jsonb_array_elements(s.products) AS p), 0
+      ) AS total
+       FROM subscriptions s 
+       JOIN clients c ON s.clientid = c.clientid 
+       WHERE s.userid = $1 `
     const values: any[] = [userId]
 
     if (status) {

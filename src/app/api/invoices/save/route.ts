@@ -18,8 +18,8 @@ export async function POST(request: Request) {
             userid = $1, clientid = $2, status = $3, currency = $4, 
             language = $5, date = $6, notes = $7, discount = $8, 
             salestax = $9, secondtax = $10, acceptcreditcards = $11, 
-            acceptpaypal = $12, products = $13
-          WHERE invoiceid = $14`,
+            acceptpaypal = $12, subscriptionid = $13 products = $14
+          WHERE invoiceid = $15`,
         [
           invoice.userid,
           invoice.clientid,
@@ -33,6 +33,7 @@ export async function POST(request: Request) {
           invoice.options.secondtax?.rate,
           invoice.options.acceptcreditcards,
           invoice.options.acceptpaypal,
+          invoice.subscriptionid,
           JSON.stringify(
             invoice.items.map((item: InvoiceItem) => ({
               id: item.id,
@@ -49,8 +50,8 @@ export async function POST(request: Request) {
       const result = await client.query(`
           INSERT INTO invoices (
           userid, clientid, status, currency, language, date, notes, 
-          discount, salestax, secondtax, acceptcreditcards, acceptpaypal, products
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) 
+          discount, salestax, secondtax, acceptcreditcards, acceptpaypal, subscriptionid, products
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
         RETURNING invoiceid
         `, [
         invoice.userid,
@@ -65,6 +66,7 @@ export async function POST(request: Request) {
         invoice.options.secondtax?.rate,
         invoice.options.acceptcreditcards,
         invoice.options.acceptpaypal,
+        invoice.subscriptionid,
         JSON.stringify(
           invoice.items.map((item: InvoiceItem) => ({
             id: item.id,

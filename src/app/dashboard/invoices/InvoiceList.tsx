@@ -73,17 +73,17 @@ export function InvoiceList({ subId }: InvoiceListProps) {
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
         </tr>
       </thead>
-      {!subId &&
-        <tbody className="bg-white divide-y divide-gray-200">
-          {invoices.map((invoice) => (
-            <tr key={invoice.invoiceid}>
-              <td className="px-6 py-4 whitespace-nowrap">{invoice.status}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{invoice.currency}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{invoice.total}</td>
-              {!subId &&
-                <td className="px-6 py-4 whitespace-nowrap">{invoice.client_name}</td>
-              }
-              <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {invoices.map((invoice) => (
+          <tr key={invoice.invoiceid}>
+            <td className="px-6 py-4 whitespace-nowrap">{invoice.status}</td>
+            <td className="px-6 py-4 whitespace-nowrap">{invoice.currency}</td>
+            <td className="px-6 py-4 whitespace-nowrap">{invoice.total}</td>
+            {!subId &&
+              <td className="px-6 py-4 whitespace-nowrap">{invoice.client_name}</td>
+            }
+            <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
+            {!subId &&
               <td className="px-6 py-4 whitespace-nowrap">
                 {invoice.status === "Draft" &&
                   <button className="text-blue-600 hover:text-blue-900 mr-2">Send</button>}
@@ -96,10 +96,10 @@ export function InvoiceList({ subId }: InvoiceListProps) {
                 {/* <button className="text-green-600 hover:text-green-900 mr-2">Edit</button> */}
                 <button className="text-gray-600 hover:text-gray-900">View</button>
               </td>
-            </tr>
-          ))}
-        </tbody>
-      }
+            }
+          </tr>
+        ))}
+      </tbody>
     </table>
   )
 }

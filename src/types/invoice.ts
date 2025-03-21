@@ -29,6 +29,7 @@ export interface Invoice {
   status: InvoiceStatus
   options: InvoiceOptions
   items: InvoiceItem[]
+  subscriptionid?: number
 }
 
 export interface InvoiceToDisplay {

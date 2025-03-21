@@ -12,6 +12,7 @@ export interface Subscription {
   end_date?: string
   status: SubscriptionStatus
   invoicePrototype: InvoicePrototype
+  next_invoice?: string
 }
 
 export interface SubscriptionToDisplay {
