@@ -12,10 +12,12 @@ async function getInvoice(id: string) {
     const client = await pool.connect();
     try {
         const invoice = await client.query(`
-      SELECT i.*, c.name as client_name, c.email as client_email, COALESCE(SUM(p.amount * p.quantity), 0) as total
+      SELECT i.*, c.name as client_name, c.email as client_email, COALESCE(
+        (SELECT SUM((p->>'amount')::numeric * (p->>'quantity')::numeric) 
+         FROM jsonb_array_elements(i.products) AS p), 0
+      ) AS total
       FROM invoices i
       JOIN clients c ON i.clientid = c.clientid
-      LEFT JOIN productsoninvoice p ON i.invoiceid = p.invoiceid
       WHERE i.invoiceid = $1
       GROUP BY i.invoiceid, c.name, c.email
     `, [id])

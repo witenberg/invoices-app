@@ -14,11 +14,11 @@ import { Logout } from "./Logout"
 const navigation = [
   { name: "Invoices", href: "/dashboard/invoices", icon: FileText },
   { name: "Subscriptions", href: "/dashboard/subscriptions", icon: Repeat },
-  { name: "Sales Pages", href: "/sales-pages", icon: Layout },
-  { name: "Clients", href: "/clients", icon: Users },
-  { name: "Reports", href: "/reports", icon: BarChart3 },
-  { name: "Settings", href: "/settings", icon: Settings },
-  { name: "Help", href: "/help", icon: HelpCircle },
+  // { name: "Sales Pages", href: "/sales-pages", icon: Layout },
+  { name: "Clients", href: "/dashboard//clients", icon: Users },
+  // { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+  // { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  // { name: "Help", href: "/help", icon: HelpCircle },
 ]
 
 export function AppSidebar({ pathname }: { pathname: string }) {

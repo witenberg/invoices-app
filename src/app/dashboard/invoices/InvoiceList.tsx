@@ -77,10 +77,10 @@ export function InvoiceList({ subId }: InvoiceListProps) {
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
         {invoices.map((invoice) => (
-          <tr 
-          key={invoice.invoiceid}
-          onClick={() => router.push(`/dashboard/subscriptions/${invoice.invoiceid}/details`)}
-          className="cursor-pointer hover:bg-gray-100"
+          <tr
+            key={invoice.invoiceid}
+            onClick={() => router.push(`/dashboard/invoices/${invoice.invoiceid}/details`)}
+            className="cursor-pointer hover:bg-gray-100"
           >
             <td className="px-6 py-4 whitespace-nowrap">{invoice.status}</td>
             <td className="px-6 py-4 whitespace-nowrap">{invoice.currency}</td>
@@ -91,8 +91,7 @@ export function InvoiceList({ subId }: InvoiceListProps) {
             <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
             {!subId &&
               <td className="px-6 py-4 whitespace-nowrap">
-                {invoice.status === "Draft" &&
-                  <button className="text-blue-600 hover:text-blue-900 mr-2">Send</button>}
+                <button className="text-blue-600 hover:text-blue-900 mr-2">Send</button>
                 <Link
                   href={`/dashboard/invoices/${invoice.invoiceid}/edit`}
                   className="text-green-600 hover:text-green-900 mr-2"

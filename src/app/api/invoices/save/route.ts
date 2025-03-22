@@ -18,7 +18,7 @@ export async function POST(request: Request) {
             userid = $1, clientid = $2, status = $3, currency = $4, 
             language = $5, date = $6, notes = $7, discount = $8, 
             salestax = $9, secondtax = $10, acceptcreditcards = $11, 
-            acceptpaypal = $12, subscriptionid = $13 products = $14
+            acceptpaypal = $12, subscriptionid = $13, products = $14
           WHERE invoiceid = $15`,
         [
           invoice.userid,
