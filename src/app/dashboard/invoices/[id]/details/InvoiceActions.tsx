@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 
 export function InvoiceActions({ invoiceId }: { invoiceId: string }) {
     const router = useRouter()
+    const currentUrl = `${window.location.origin}/dashboard/invoices/${invoiceId}/details`
 
     const handleEdit = () => {
         router.push(`/dashboard/invoices/${invoiceId}/edit`)
@@ -19,11 +20,16 @@ export function InvoiceActions({ invoiceId }: { invoiceId: string }) {
     }
 
     const handleView = () => {
-        // View logic to be implemented
+        router.push(`/dashboard/invoices/${invoiceId}/view`)
     }
 
-    const handleCopyLink = () => {
-        // Copy link logic to be implemented
+    const handleCopyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(currentUrl)
+            alert("skopiowano")
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     const handleDelete = () => {
