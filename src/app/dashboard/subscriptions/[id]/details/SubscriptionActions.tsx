@@ -30,17 +30,13 @@ export function SubscriptionActions({ subId, status }: { subId: string; status: 
     return (
         <div className="bg-white rounded-lg shadow-sm p-6 space-y-2">
             <Button className="w-full bg-blue-600 hover:bg-blue-700">Edit</Button>
-
             <ConfirmationModal
                 message="Are you sure you want to change the subscription status?"
                 confirmText={status === "Paused" ? "Activate" : "Pause"}
                 onConfirm={updateStatus}
-            >
-                <Button className="w-full bg-white-600 text-blue-600 border hover:border-black hover:bg-white">
-                    {status === "Paused" ? "Activate" : "Pause"}
-                </Button>
-            </ConfirmationModal>
-
+                triggerText={status === "Paused" ? "Activate" : "Pause"}
+                triggerClassName="w-full h-10 px-4 py-2 inline-flex items-center justify-center bg-white-600 text-blue-600 border hover:border-black hover:bg-white rounded-md text-sm font-medium"
+            />
             <Button className="w-full bg-white-600 text-blue-600 border hover:border-black hover:bg-white">Client</Button>
             <Button className="w-full bg-white-600 text-red-600 border hover:border-black hover:bg-white">Delete</Button>
         </div>

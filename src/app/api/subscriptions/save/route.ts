@@ -4,6 +4,7 @@ import { Subscription } from "@/types/subscription";
 import { InvoiceItem } from "@/types/invoiceItem";
 import { makeInvoice } from "@/app/actions/invoices";
 import { getNextSubscriptionDate } from "@/app/actions/subscriptions";
+import { sendInvoiceEmail } from "@/app/actions/email";
 
 export async function POST(request: Request) {
   const sub: Subscription = await request.json();
@@ -90,7 +91,8 @@ export async function POST(request: Request) {
     }
 
     if (sub.start_date == date.toISOString().split("T")[0]) {
-      makeInvoice(sub.invoicePrototype, subid);
+      const invoiceid = makeInvoice(sub.invoicePrototype, subid);
+      sendInvoiceEmail(invoiceid.toString())
     }
     
     return NextResponse.json({ success: true, subid });

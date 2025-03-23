@@ -89,3 +89,12 @@ export interface InvoicePrototype {
   products: InvoiceItem[]
   subscriptionid?: number
 }
+
+export interface InvoiceToPDF {
+  invoiceid: number;
+  date: string;
+  currency: string;
+  products: { name: string; amount: string; quantity: number }[];
+  username: string;
+  client_name: string;
+}

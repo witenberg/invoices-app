@@ -7,6 +7,7 @@ import type { InvoiceToDisplay } from "@/types/invoice"
 import { ExtendedUser } from "@/app/actions/user"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { ConfirmationModal } from "@/components/ConfirmationModal"
 
 interface InvoiceListProps {
   subId?: string
@@ -44,6 +45,25 @@ export function InvoiceList({ subId }: InvoiceListProps) {
 
     fetchInvoices()
   }, [session, statusFilter, status])
+
+  const handleSend = async (invoiceId: number) => {
+    try {
+      const response = await fetch(`/api/invoices/${invoiceId}/send`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        console.log(`Invoice ${invoiceId} sent successfully`);
+      } else {
+        console.error(`Failed to send invoice ${invoiceId}`);
+      }
+    } catch (error) {
+      console.error("Error sending invoice:", error);
+    }
+  }
 
   if (status === "loading") {
     return <div>Loading session...</div>
@@ -91,17 +111,30 @@ export function InvoiceList({ subId }: InvoiceListProps) {
             <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
             {!subId &&
               <td className="px-6 py-4 whitespace-nowrap">
-                <button className="text-blue-600 hover:text-blue-900 mr-2">Send</button>
-                <Link
-                  href={`/dashboard/invoices/${invoice.invoiceid}/edit`}
-                  className="text-green-600 hover:text-green-900 mr-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Edit
-                </Link>
-                {/* <button className="text-green-600 hover:text-green-900 mr-2">Edit</button> */}
-                <button className="text-gray-600 hover:text-gray-900">View</button>
-              </td>
+              <ConfirmationModal
+                message={`Are you sure you want to send invoice #${invoice.invoiceid} to ${invoice.client_name}?`}
+                confirmText="Send Invoice"
+                onConfirm={() => handleSend(invoice.invoiceid)}
+                triggerText="Send"
+                triggerClassName="text-blue-600 hover:text-blue-900 mr-2"
+              />
+              <Link
+                href={`/dashboard/invoices/${invoice.invoiceid}/edit`}
+                className="text-green-600 hover:text-green-900 mr-2"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Edit
+              </Link>
+              <button 
+                className="text-gray-600 hover:text-gray-900" 
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  window.open(`/invoices/${invoice.invoiceid}`, '_blank');
+                }}
+              >
+                View
+              </button>
+            </td>
             }
           </tr>
         ))}

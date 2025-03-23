@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 import type { Invoice } from "@/types/invoice";
 import { InvoiceItem } from "@/types/invoiceItem";
+import { sendInvoiceEmail } from "@/app/actions/email";
 
 export async function POST(request: Request) {
   const invoice: Invoice = await request.json();
@@ -79,6 +80,8 @@ export async function POST(request: Request) {
       )
       invoiceid = result.rows[0].invoiceid
     }
+    if (invoice.options.date === new Date().toISOString().split("T")[0] && invoiceid) 
+      sendInvoiceEmail(invoiceid.toString())
 
     await client.query("COMMIT");
     return NextResponse.json({ success: true, invoiceid });

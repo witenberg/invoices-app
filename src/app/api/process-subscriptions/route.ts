@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { makeInvoice } from "@/app/actions/invoices";
 import { getNextSubscriptionDate } from "@/app/actions/subscriptions";
+import { sendInvoiceEmail } from "@/app/actions/email";
 
 export async function POST(request: Request) {
     const today_date = new Date().toISOString().split("T")[0];
@@ -45,7 +46,8 @@ export async function POST(request: Request) {
         })
 
         for (const sub of subscriptions) {
-            await makeInvoice(sub.invoicePrototype, sub.subscriptionid);
+            let invoiceid = await makeInvoice(sub.invoicePrototype, sub.subscriptionid);
+            sendInvoiceEmail(invoiceid)
 
             const next_invoice = getNextSubscriptionDate(sub.start_date, sub.frequency);
 

@@ -20,13 +20,13 @@ export function InvoiceActions({ invoiceId }: { invoiceId: string }) {
     }
 
     const handleView = () => {
-        router.push(`/dashboard/invoices/${invoiceId}/view`)
+        window.open(`/invoices/${invoiceId}`, '_blank')
     }
 
     const handleCopyLink = async () => {
         try {
             await navigator.clipboard.writeText(currentUrl)
-            alert("skopiowano")
+            // alert()
         } catch (error) {
             console.error(error)
         }
