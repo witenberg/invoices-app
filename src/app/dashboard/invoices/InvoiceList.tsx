@@ -13,12 +13,13 @@ interface InvoiceListProps {
   subId?: string
 }
 
-export function InvoiceList({ subId }: InvoiceListProps) {
+export function InvoiceList({ subId: propSubId }: InvoiceListProps) {
   const [invoices, setInvoices] = useState<InvoiceToDisplay[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const statusFilter = searchParams.get("status")
+  const subId = propSubId || searchParams.get("subId")
   const router = useRouter()
 
   useEffect(() => {
@@ -88,7 +89,7 @@ export function InvoiceList({ subId }: InvoiceListProps) {
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Currency</th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-          {!subId &&
+          {!propSubId &&
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
           }
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -105,11 +106,11 @@ export function InvoiceList({ subId }: InvoiceListProps) {
             <td className="px-6 py-4 whitespace-nowrap">{invoice.status}</td>
             <td className="px-6 py-4 whitespace-nowrap">{invoice.currency}</td>
             <td className="px-6 py-4 whitespace-nowrap">{invoice.total}</td>
-            {!subId &&
+            {!propSubId &&
               <td className="px-6 py-4 whitespace-nowrap">{invoice.client_name}</td>
             }
             <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
-            {!subId &&
+            {!propSubId &&
               <td className="px-6 py-4 whitespace-nowrap">
               <ConfirmationModal
                 message={`Are you sure you want to send invoice #${invoice.invoiceid} to ${invoice.client_name}?`}

@@ -90,7 +90,13 @@ export function SubscriptionList() {
                             >
                                 Edit
                             </Link>
-                            {/* "Client" and "Invoices" to add */}
+                            <Link
+                                href={`/dashboard/invoices?userId=${(session?.user as ExtendedUser)?.userid}&status=&subId=${sub.subscriptionid}`}
+                                className="text-gray-600 hover:text-gray-900"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                Invoices
+                            </Link>
                         </td>
                     </tr>
                 ))}
