@@ -44,9 +44,7 @@ export default function EditInvoicePage() {
     }
 
     return (
-        <SessionProvider>
-            <CreateInvoiceForm initialInvoice={invoice} />
-        </SessionProvider>
+        <CreateInvoiceForm initialInvoice={invoice} />
     )
 }
 

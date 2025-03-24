@@ -38,7 +38,7 @@ export function SubscriptionList() {
         }
 
         fetchSubscriptions()
-    }, [session, statusFilter, status])
+    }, [(session?.user as ExtendedUser)?.userid, statusFilter, status])
 
     if (status === "loading") {
         return <div>Loading session...</div>

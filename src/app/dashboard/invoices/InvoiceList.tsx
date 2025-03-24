@@ -44,7 +44,7 @@ export function InvoiceList({ subId }: InvoiceListProps) {
     }
 
     fetchInvoices()
-  }, [session, statusFilter, status])
+  }, [(session?.user as ExtendedUser)?.userid, statusFilter, status, subId])
 
   const handleSend = async (invoiceId: number) => {
     try {

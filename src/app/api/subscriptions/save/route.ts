@@ -8,16 +8,20 @@ import { sendInvoiceEmail } from "@/app/actions/email";
 
 export async function POST(request: Request) {
   const sub: Subscription = await request.json();
-  const date = new Date();
+  const today = new Date().toISOString().split("T")[0];
   
   const client = await pool.connect();
   try {
     let subid = sub.subscriptionid;
+    let nextInvoice: string;
+
+    if (sub.start_date === today) {
+      nextInvoice = getNextSubscriptionDate(sub.start_date, sub.frequency)
+    } else {
+      nextInvoice = sub.start_date
+    }
 
     if (subid) {
-      const next_invoice = getNextSubscriptionDate(sub.start_date, sub.frequency)
-      console.log("next_invoice: ", next_invoice)
-
       await client.query(
         `UPDATE subscriptions SET 
           userid = $1, clientid = $2, status = $3, currency = $4, 
@@ -48,7 +52,7 @@ export async function POST(request: Request) {
               quantity: item.quantity ?? 1
             }))
           ),
-          next_invoice,
+          nextInvoice,
           subid,
         ]
       );
@@ -58,8 +62,8 @@ export async function POST(request: Request) {
         `INSERT INTO subscriptions (
           userid, clientid, status, currency, language, notes, 
           discount, salestax, secondtax, acceptcreditcards, acceptpaypal, 
-          start_date, frequency, end_date, products
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
+          start_date, frequency, end_date, products, next_invoice
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
         RETURNING subscriptionid`,
         [
           sub.invoicePrototype.userid,
@@ -84,15 +88,16 @@ export async function POST(request: Request) {
               quantity: item.quantity ?? 1
             }))
           ),
+          nextInvoice
         ]
       );
 
       subid = subscriptionResult.rows[0].subscriptionid;
     }
 
-    if (sub.start_date == date.toISOString().split("T")[0]) {
-      const invoiceid = makeInvoice(sub.invoicePrototype, subid);
-      sendInvoiceEmail(invoiceid.toString())
+    if (sub.start_date === today) {
+      const invoiceid = await makeInvoice(sub.invoicePrototype, subid);
+      sendInvoiceEmail(invoiceid)
     }
     
     return NextResponse.json({ success: true, subid });

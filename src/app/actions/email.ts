@@ -28,7 +28,7 @@ export async function sendInvoiceEmail(invoiceid: string) {
           JOIN public.users u ON i.userid = u.userid
           WHERE i.invoiceid = $1
         `;
-        const result = await pool.query(query, [invoiceid]);
+        const result = await pool.query(query, [parseInt(invoiceid)]);
 
         if (result.rows.length === 0) {
             throw new Error(`Invoice with ID ${invoiceid} not found`);
@@ -49,7 +49,7 @@ export async function sendInvoiceEmail(invoiceid: string) {
       <p>You have an invoice to pay:</p>
       <ul>
         <li><strong>Invoice Number:</strong> ${invoiceid}</li>
-        <li><strong>Amount: </strong>${currency} ${total}</li>
+        <li><strong>Amount: </strong>${currency} ${parseFloat(total).toFixed(2)}</li>
       </ul>
       <p>Please click the button below to view your invoice:</p>
       <a href=${invoiceUrl} style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">View Invoice</a>

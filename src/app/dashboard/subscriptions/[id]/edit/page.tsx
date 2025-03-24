@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { CreateSubscriptionForm } from "../../create/CreateSubscriptionForm"
-import { SessionProvider } from "next-auth/react"
 import { Subscription } from "@/types/subscription"
 
 export default function EditInvoicePage() {
@@ -44,9 +43,7 @@ export default function EditInvoicePage() {
     }
 
     return (
-        <SessionProvider>
-            <CreateSubscriptionForm initialSub={subscription} />
-        </SessionProvider>
+        <CreateSubscriptionForm initialSub={subscription} />
     )
 }
 

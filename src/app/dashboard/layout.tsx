@@ -9,11 +9,10 @@ export default function RootLayout({
 }) {
   return (
     <div className="flex min-h-screen">
-      <SessionProvider>
+      <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
         <SidebarWrapper />
+        <main className="flex-1">{children}</main>
       </SessionProvider>
-
-      <main className="flex-1">{children}</main>
     </div>
   )
 }
