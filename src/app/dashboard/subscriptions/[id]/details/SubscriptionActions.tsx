@@ -8,6 +8,10 @@ import { ConfirmationModal } from "@/components/ConfirmationModal";
 export function SubscriptionActions({ subId, status }: { subId: string; status: SubscriptionStatus }) {
     const router = useRouter();
 
+    const handleEdit = () => {
+        router.push(`/dashboard/subscriptions/${subId}/edit`)
+    }
+
     const updateStatus = async () => {
         const newStatus = status === "Paused" ? "Active" : "Paused";
         try {
@@ -29,7 +33,7 @@ export function SubscriptionActions({ subId, status }: { subId: string; status: 
 
     return (
         <div className="bg-white rounded-lg shadow-sm p-6 space-y-2">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700">Edit</Button>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={handleEdit} >Edit</Button>
             <ConfirmationModal
                 message="Are you sure you want to change the subscription status?"
                 confirmText={status === "Paused" ? "Activate" : "Pause"}

@@ -9,7 +9,7 @@ import { sendInvoiceEmail } from "@/app/actions/email";
 export async function POST(request: Request) {
   const sub: Subscription = await request.json();
   const today = new Date().toISOString().split("T")[0];
-  
+
   const client = await pool.connect();
   try {
     let subid = sub.subscriptionid;
@@ -22,13 +22,14 @@ export async function POST(request: Request) {
     }
 
     if (subid) {
+
       await client.query(
         `UPDATE subscriptions SET 
           userid = $1, clientid = $2, status = $3, currency = $4, 
           language = $5, notes = $6, discount = $7, 
           salestax = $8, secondtax = $9, acceptcreditcards = $10, acceptpaypal = $11, 
-          start_date = $12, frequency = $13, end_date = $14, products = $14, next_invoice = $15 
-         WHERE subscriptionid = $16`,
+          start_date = $12, frequency = $13, end_date = $14, products = $15, next_invoice = $16 
+         WHERE subscriptionid = $17`,
         [
           sub.invoicePrototype.userid,
           sub.invoicePrototype.clientid,
@@ -99,7 +100,7 @@ export async function POST(request: Request) {
       const invoiceid = await makeInvoice(sub.invoicePrototype, subid);
       sendInvoiceEmail(invoiceid)
     }
-    
+
     return NextResponse.json({ success: true, subid });
   } catch (error) {
     console.error("Error saving subscription:", error);
