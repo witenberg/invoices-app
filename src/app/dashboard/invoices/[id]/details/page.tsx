@@ -37,6 +37,7 @@ export default async function InvoiceDetailsPage({
 }: { params: { id: string } }) {
     const { id } = await params
     const invoice = await getInvoice(id)
+    console.log(invoice.status)
 
     if (!invoice) {
         notFound()
@@ -73,7 +74,7 @@ export default async function InvoiceDetailsPage({
                             <InvoiceSummary invoice={invoice} />
                         </div>
                         <div className="p-6 pt-0">
-                            <InvoiceActions invoiceId={id} />
+                            <InvoiceActions invoiceId={id} subId={invoice.subscriptionid} status={invoice.status} />
                         </div>
                     </div>
                 </div>
