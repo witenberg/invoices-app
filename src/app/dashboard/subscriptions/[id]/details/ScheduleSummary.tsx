@@ -1,7 +1,7 @@
 import { SubscriptionFrequency } from "@/types/subscription";
 
-export function ScheduleSummary({ nextInvoice, frequency, totalRevenue, totalInvoices, endDate }:
-  { nextInvoice: string; frequency: SubscriptionFrequency; totalRevenue: number; totalInvoices: number, endDate?: string }) {
+export function ScheduleSummary({ nextInvoice, frequency, totalRevenue, currency, totalInvoices, endDate }:
+  { nextInvoice: string; frequency: SubscriptionFrequency; totalRevenue: number; currency: string, totalInvoices: number, endDate?: string }) {
   return (
     <div className="bg-white rounded-lg p-4 shadow">
       <div className="grid grid-cols-[1fr_3fr] gap-y-8 p-2">
@@ -19,7 +19,7 @@ export function ScheduleSummary({ nextInvoice, frequency, totalRevenue, totalInv
         }
 
         <div className="text-sm text-gray-600 font-semibold">Total Revenue</div>
-        <div className="text-sm">{totalRevenue}</div>
+        <div className="text-sm">{currency} {totalRevenue.toFixed(2)}</div>
 
         <div className="text-sm text-gray-600 font-semibold">Total Invoices</div>
         <div className="text-sm">{totalInvoices}</div>

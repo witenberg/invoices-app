@@ -12,10 +12,12 @@ async function getSub(id: string) {
       SELECT s.*, c.name as client_name, c.email as client_email, COALESCE(
         (SELECT SUM((p->>'amount')::numeric * (p->>'quantity')::numeric) 
          FROM jsonb_array_elements(s.products) AS p), 0
-      ) AS total
+      ) AS total, COUNT(i.invoiceid) as total_invoices
       FROM subscriptions s
       JOIN clients c ON s.clientid = c.clientid
+      RIGHT JOIN invoices i ON s.subscriptionid = i.subscriptionid
       WHERE s.subscriptionid = $1
+      GROUP BY s.subscriptionid, c.name, c.email
     `, [id])
         return sub.rows[0]
     } catch (error) {
@@ -45,8 +47,9 @@ export default async function SubscriptionDetails({
                             <ScheduleSummary 
                             nextInvoice={sub.next_invoice?.toLocaleDateString()} 
                             frequency={sub.frequency} 
-                            totalRevenue={1} 
-                            totalInvoices={3} 
+                            totalRevenue={sub.total * sub.total_invoices}
+                            currency={sub.currency} 
+                            totalInvoices={sub.total_invoices} 
                             endDate={sub.endDate?.toLocaleDateString()} 
                             />
                         </div>
